@@ -21,6 +21,8 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+            - integration-queue_integration_rabbitmq
+            - integration-s3_integration_s3
         depends_on:
             - mariadb
             - redis
@@ -63,3 +65,7 @@ services:
 networks:
     sail:
         driver: bridge
+    integration-queue_integration_rabbitmq:
+        external: true
+    integration-s3_integration_s3:
+        external: true
