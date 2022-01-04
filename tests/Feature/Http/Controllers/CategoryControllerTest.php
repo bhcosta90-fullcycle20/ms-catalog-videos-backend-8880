@@ -94,21 +94,32 @@ class CategoryControllerTest extends TestCase
 
     public function testUpdated()
     {
-        $this->assertUpdate($data = [
-            'name' => 'teste'
+        $this->model = Model::factory()->create([
+            'description' => 'description',
+            'is_active' => false,
+        ]);
+
+        $response = $this->assertUpdate($data = [
+            'name' => 'teste',
+            'description' => 'teste',
+            'is_active' => true,
         ], $data + [
             'is_active' => true,
+            'description' => 'teste',
             'deleted_at' => null,
         ]);
 
-        $this->assertUpdate($data = [
-            'name' => 'teste',
-            'is_active' => false,
-            'description' => 'teste',
-        ], $data + [
-            'is_active' => false,
-            'description' => 'teste',
+        $response->assertJsonStructure([
+            'created_at', 'updated_at',
         ]);
+
+        $response = $this->assertUpdate($data = [
+            'name' => 'teste',
+            'description' => '',
+            'is_active' => true,
+        ], array_merge($data, [
+            'description' => null,
+        ]));
     }
 
     public function testDestroy()
