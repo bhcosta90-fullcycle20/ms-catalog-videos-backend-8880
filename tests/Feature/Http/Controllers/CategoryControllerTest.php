@@ -8,11 +8,12 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
+use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
 
 class CategoryControllerTest extends TestCase
 {
-    use RefreshDatabase, TestValidation;
+    use RefreshDatabase, TestValidation, TestSave;
 
     private Model $model;
 
@@ -73,48 +74,42 @@ class CategoryControllerTest extends TestCase
 
     public function testCreated()
     {
-        $response = $this->postJson($this->routeStore(), [
-            'name' => 'teste',
-        ])->assertStatus(201);
+        $this->assertStore($data = [
+            'name' => 'teste'
+        ], $data + [
+            'is_active' => true,
+            'description' => null,
+            'deleted_at' => null,
+        ]);
 
-        $obj = Model::find($response->json('id') ?: $response->json('data.id'));
-        $response->assertJson($obj->toArray());
-        $this->assertTrue($response->json('is_active'));
-        $this->assertNull($response->json('description'));
-
-        $response = $this->postJson($this->routeStore(), [
+        $this->assertStore($data = [
             'name' => 'teste',
             'is_active' => false,
             'description' => 'teste',
-        ])->assertStatus(201)
-            ->assertJsonFragment([
-                'is_active' => false,
-                'description' => 'teste',
-            ]);
+        ], $data + [
+            'is_active' => false,
+            'description' => 'teste',
+        ]);
     }
 
     public function testUpdated()
     {
-        $this->putJson($this->routePut(), [
-            'name' => 'teste',
+        $this->assertUpdate($data = [
+            'name' => 'teste'
+        ], $data + [
             'is_active' => true,
-            'description' => 'teste',
-        ])->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => 'teste',
-                'description' => 'teste',
-                'is_active' => true,
-            ]);
+            'description' => null,
+            'deleted_at' => null,
+        ]);
 
-        $this->putJson($this->routePut(), [
+        $this->assertUpdate($data = [
             'name' => 'teste',
             'is_active' => false,
-            'description' => '',
-        ])->assertStatus(200)
-            ->assertJsonFragment([
-                'is_active' => false,
-                'description' => null,
-            ]);
+            'description' => 'teste',
+        ], $data + [
+            'is_active' => false,
+            'description' => 'teste',
+        ]);
     }
 
     public function testDestroy()
@@ -136,5 +131,10 @@ class CategoryControllerTest extends TestCase
     {
         $obj = $this->model;
         return '/categories/' . $obj->id;
+    }
+
+    protected function model()
+    {
+        return new Model;
     }
 }

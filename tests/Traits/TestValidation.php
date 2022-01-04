@@ -13,20 +13,20 @@ trait TestValidation
         array $data,
         string $rule,
         array $ruleParams = []
-    ) {
+    ): TestResponse {
         $response = $this->postJson($this->routeStore(), $data);
         $fields = array_keys($data);
-        $this->assertInvalidationFields($response, $fields, $rule, $ruleParams);
+        return $this->assertInvalidationFields($response, $fields, $rule, $ruleParams);
     }
 
     protected function assertInvalidationUpdate(
         array $data,
         string $rule,
         array $ruleParams = []
-    ) {
+    ): TestResponse {
         $response = $this->putJson($this->routePut(), $data);
         $fields = array_keys($data);
-        $this->assertInvalidationFields($response, $fields, $rule, $ruleParams);
+        return $this->assertInvalidationFields($response, $fields, $rule, $ruleParams);
     }
 
     protected function assertInvalidationFields(
@@ -47,6 +47,6 @@ trait TestValidation
     }
 
     protected abstract function routeStore();
-    
+
     protected abstract function routePut();
 }
