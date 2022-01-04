@@ -10,7 +10,6 @@ class GenreController extends Controller
 {
     private $rules = [
         'name' => 'required|min:3|max:100',
-        'description' => 'nullable|max:1000',
         'is_active' => 'nullable|boolean',
     ];
 
