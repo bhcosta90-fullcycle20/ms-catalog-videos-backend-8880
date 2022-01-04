@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers;
+namespace Tests\Feature\Http\Controllers\Abstracts;
 
 use App\Http\Controllers\Abstracts\BasicCrudController;
 use Illuminate\Foundation\Testing\WithFaker;
