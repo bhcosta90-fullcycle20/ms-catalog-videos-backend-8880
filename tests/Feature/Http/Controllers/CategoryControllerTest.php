@@ -113,13 +113,11 @@ class CategoryControllerTest extends TestCase
             'created_at', 'updated_at',
         ]);
 
-        $response = $this->assertUpdate($data = [
-            'name' => 'teste',
-            'description' => '',
-            'is_active' => true,
-        ], array_merge($data, [
-            'description' => null,
-        ]));
+        $data['description'] = '';
+        $response = $this->assertUpdate($data, ['description' => null]);
+
+        $data['description'] = 'teste';
+        $response = $this->assertUpdate($data, ['description' => 'teste']);
     }
 
     public function testDestroy()
