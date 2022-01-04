@@ -15,12 +15,12 @@ class CategoryResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->uuid,
+            'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'active' => (bool) $this->is_active,
             'links' => [
-                'me' => route('categories.show', $this->uuid)
+                'me' => route('categories.show', $this->id)
             ]
         ];
     }

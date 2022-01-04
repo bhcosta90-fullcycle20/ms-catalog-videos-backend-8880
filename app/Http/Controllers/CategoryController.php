@@ -27,6 +27,7 @@ class CategoryController extends Controller
         $category = Category::create($data);
         $category->refresh();
 
+        return $category;
         return new CategoryResource($category);
     }
 
@@ -41,6 +42,7 @@ class CategoryController extends Controller
         $data = $this->validate($request, $this->rules);
         $category->update($data);
 
+        return $category;
         return new CategoryResource($category);
     }
 
