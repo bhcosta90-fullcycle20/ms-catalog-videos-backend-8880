@@ -16,7 +16,9 @@ class JsonResponseMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $request->header('Accept', 'application/json');
+        $request->headers->add([
+            'Accept' => 'application/json',
+        ]);
         return $next($request);
     }
 }
