@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Abstracts;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ abstract class BasicCrudController extends Controller
     protected abstract function model();
 
     protected abstract function ruleStore();
+
+    protected abstract function rulePut();
 
     public function index()
     {
@@ -24,9 +27,21 @@ abstract class BasicCrudController extends Controller
         return $obj;
     }
 
-    public function show()
+    public function show($id)
     {
+        return $this->findOrFail($id);
+    }
 
+    public function update(Request $request, $id){
+        $data = $this->validate($request, $this->rulePut());
+        $obj = $this->findOrFail($id);
+        $obj->update($data);
+        return $obj;
+    }
+
+    public function destroy($id){
+        $this->findOrFail($id)->delete();
+        return response()->noContent();
     }
 
     protected function findOrFail(int|string $value)
@@ -35,26 +50,4 @@ abstract class BasicCrudController extends Controller
         $keyName = $model->getRouteKeyName();
         return $this->model()->where($keyName, $value)->firstOrFail();
     }
-
-    // public function show(Category $category)
-    // {
-    //     return $category;
-    //     return new CategoryResource($category);
-    // }
-
-    // public function update(Request $request, Category $category)
-    // {
-    //     $data = $this->validate($request, $this->rules);
-    //     $category->update($data);
-
-    //     return $category;
-    //     return new CategoryResource($category);
-    // }
-
-    // public function destroy(Category $category)
-    // {
-    //     $category->delete();
-
-    //     return response()->noContent();
-    // }
 }

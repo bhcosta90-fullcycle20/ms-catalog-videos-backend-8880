@@ -2,7 +2,7 @@
 
 namespace Tests\Stubs\Controllers;
 
-use App\Http\Controllers\BasicCrudController;
+use App\Http\Controllers\Abstracts\BasicCrudController;
 use Tests\Stubs\Models\CategoryStub;
 
 class CategoryControllerStub extends BasicCrudController
@@ -17,5 +17,10 @@ class CategoryControllerStub extends BasicCrudController
             'name' => 'required|min:3|max:100',
             'description' => 'nullable|max:1000',
         ];
+    }
+
+    protected function rulePut()
+    {
+        return $this->ruleStore();
     }
 }

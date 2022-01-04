@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Http\Controllers\BasicCrudController;
+use App\Http\Controllers\Abstracts\BasicCrudController;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;
 use Mockery;
@@ -63,7 +63,41 @@ class BasicCrudControllerTest extends TestCase
         $request = $mockery;
         $result = $this->controller->store($request);
 
-        $this->assertEquals(CategoryStub::find(1)->toArray(), $result->toArray());
+        $this->assertEquals($result->toArray(), CategoryStub::find(1)->toArray());
+    }
+
+    public function testShow()
+    {
+        $category = CategoryStub::create(['name' => 'teste', 'description' => 'teste']);
+        $result = $this->controller->show($category->id);
+        $this->assertEquals($result->toArray(), $category->toArray());
+    }
+
+    public function testUpdate()
+    {
+        $category = CategoryStub::create(['name' => 'teste', 'description' => 'teste']);
+
+        /** @var $mockery Mockery */
+        $mockery = Mockery::mock(Request::class);
+        $mockery->shouldReceive('all')
+        ->once()
+            ->andReturn(['name' => 'test_name']);
+
+        /** @var Request $request */
+        $request = $mockery;
+        $result = $this->controller->update($request, $category->id);
+        $this->assertEquals($result->toArray(), CategoryStub::find($category->id)->toArray());
+    }
+
+    public function testDestroy()
+    {
+        $category = CategoryStub::create(['name' => 'teste', 'description' => 'teste']);
+
+        $response = $this->controller->destroy($category->id);
+        $this->assertCount(0, CategoryStub::all());
+
+        $this->createTestResponse($response)
+            ->assertStatus(204);
     }
 
     public function testIfFindOrFailFetchModel()

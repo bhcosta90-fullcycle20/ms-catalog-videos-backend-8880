@@ -2,53 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\GenreResource;
 use App\Models\Genre;
-use Illuminate\Http\Request;
 
-class GenreController extends Controller
+class GenreController extends Abstracts\BasicCrudController
 {
     private $rules = [
         'name' => 'required|min:3|max:100',
         'is_active' => 'nullable|boolean',
     ];
 
-    public function index()
+    protected function model()
     {
-        return Genre::all();
-        return GenreResource::collection(Genre::paginate());
+        return new Genre;
     }
 
-    public function store(Request $request)
+    protected function ruleStore()
     {
-        $data = $this->validate($request, $this->rules);
-
-        $genre = Genre::create($data);
-        $genre->refresh();
-
-        return $genre;
-        return new GenreResource($genre);
+        return $this->rules;
     }
 
-    public function show(Genre $genre)
+    protected function rulePut()
     {
-        return $genre;
-        return new GenreResource($genre);
-    }
-
-    public function update(Request $request, Genre $genre)
-    {
-        $data = $this->validate($request, $this->rules);
-        $genre->update($data);
-
-        return $genre;
-        return new GenreResource($genre);
-    }
-
-    public function destroy(Genre $genre)
-    {
-        $genre->delete();
-
-        return response()->noContent();
+        return $this->rules;
     }
 }

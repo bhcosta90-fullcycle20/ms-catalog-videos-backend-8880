@@ -6,7 +6,7 @@ use App\Models\Category;
 use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class CategoryController extends Abstracts\BasicCrudController
 {
     private $rules = [
         'name' => 'required|min:3|max:100',
@@ -14,42 +14,18 @@ class CategoryController extends Controller
         'is_active' => 'nullable|boolean',
     ];
 
-    public function index()
+    protected function model()
     {
-        return Category::all();
-        // return CategoryResource::collection(Category::paginate());
+        return new Category;
     }
 
-    public function store(Request $request)
+    protected function ruleStore()
     {
-        $data = $this->validate($request, $this->rules);
-
-        $category = Category::create($data);
-        $category->refresh();
-
-        return $category;
-        return new CategoryResource($category);
+        return $this->rules;
     }
 
-    public function show(Category $category)
+    protected function rulePut()
     {
-        return $category;
-        return new CategoryResource($category);
-    }
-
-    public function update(Request $request, Category $category)
-    {
-        $data = $this->validate($request, $this->rules);
-        $category->update($data);
-
-        return $category;
-        return new CategoryResource($category);
-    }
-
-    public function destroy(Category $category)
-    {
-        $category->delete();
-
-        return response()->noContent();
+        return $this->rules;
     }
 }
