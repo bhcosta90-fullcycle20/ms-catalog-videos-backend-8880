@@ -4,7 +4,7 @@ namespace Tests\Feature\Http\Controllers;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\CastMember as Model;
+use App\Models\Video as Model;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
 
@@ -23,7 +23,7 @@ class VideoControllerTest extends TestCase
     public function testIndex()
     {
         $category = $this->model;
-        $response = $this->getJson('/cast_members');
+        $response = $this->getJson('/videos');
 
         $response->assertStatus(200)
             ->assertJson([$category->toArray()]);
@@ -32,43 +32,85 @@ class VideoControllerTest extends TestCase
     public function testShow()
     {
         $category = $this->model;
-        $response = $this->getJson('/cast_members/' . $category->id);
+        $response = $this->getJson('/videos/' . $category->id);
 
         $response->assertStatus(200)
             ->assertJson($category->toArray());
     }
 
-    // public function testCreatedInvalidationData()
-    // {
-    //     $data = [
-    //         'name' => '',
-    //         'type' => '',
-    //     ];
-    //     $this->assertInvalidationStore($data, 'required');
-    //     $this->assertInvalidationUpdate($data, 'required');
+    public function testInvalidateRequired()
+    {
+        $data = [
+            'title' => '',
+            'description' => '',
+            'year_launched' => '',
+            'rating' => '',
+            'duration' => '',
+        ];
 
-    //     $data = [
-    //         'name' => 'a',
-    //     ];
+        $this->assertInvalidationStore($data, "required");
+        $this->assertInvalidationUpdate($data, "required");
+    }
 
-    //     $this->assertInvalidationStore($data, 'min.string', ['min' => 3]);
-    //     $this->assertInvalidationUpdate($data, 'min.string', ['min' => 3]);
+    public function testInvalidateMinString()
+    {
+        $data = [
+            'title' => 'a',
+        ];
 
-    //     $data = [
-    //         'name' => str_repeat('a', 500)
-    //     ];
+        $this->assertInvalidationStore($data, "min.string", ['min' => 3]);
+        $this->assertInvalidationUpdate($data, "min.string", ['min' => 3]);
+    }
 
-    //     $this->assertInvalidationStore($data, 'max.string', ['max' => 100]);
-    //     $this->assertInvalidationUpdate($data, 'max.string', ['max' => 100]);
+    public function testInvalidateMaxString()
+    {
+        $data = [
+            'title' => str_repeat('a', 500),
+        ];
 
+        $this->assertInvalidationStore($data, "max.string", ['max' => 100]);
+        $this->assertInvalidationUpdate($data, "max.string", ['max' => 100]);
+    }
 
-    //     $data = [
-    //         'type' => 'a',
-    //     ];
+    public function testInvalidateInteger()
+    {
+        $data = [
+            'duration' => 'a',
+        ];
 
-    //     $this->assertInvalidationStore($data, 'in');
-    //     $this->assertInvalidationUpdate($data, 'in');
-    // }
+        $this->assertInvalidationStore($data, "integer");
+        $this->assertInvalidationUpdate($data, "integer");
+    }
+
+    public function testInvalidateBoolean()
+    {
+        $data = [
+            'opened' => 'a',
+        ];
+
+        $this->assertInvalidationStore($data, "boolean");
+        $this->assertInvalidationUpdate($data, "boolean");
+    }
+
+    public function testInvalidateDateFormatYear()
+    {
+        $data = [
+            'year_launched' => 'a',
+        ];
+
+        $this->assertInvalidationStore($data, "date_format", ['format' => 'Y']);
+        $this->assertInvalidationUpdate($data, "date_format", ['format' => 'Y']);
+    }
+
+    public function testInvalidateIn()
+    {
+        $data = [
+            'rating' => 'a',
+        ];
+
+        $this->assertInvalidationStore($data, "in");
+        $this->assertInvalidationUpdate($data, "in");
+    }
 
     // public function testCreated()
     // {
@@ -123,16 +165,16 @@ class VideoControllerTest extends TestCase
 
     protected function routeStore()
     {
-        return '/cast_members';
+        return '/videos';
     }
 
     protected function routePut()
     {
-        return '/cast_members/' . $this->model->id;
+        return '/videos/' . $this->model->id;
     }
 
     protected function model()
     {
         return new Model;
-    }    
+    }
 }

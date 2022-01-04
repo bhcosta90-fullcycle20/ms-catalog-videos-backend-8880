@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Video;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class VideoFactory extends Factory
@@ -19,6 +20,7 @@ class VideoFactory extends Factory
             'year_launched' => rand(1985, date('Y')),
             'opened' => rand(0, 1),
             'duration' => rand(1, 30),
+            'rating' => $this->faker->randomElement(Video::RATINGS),
             // 'thumb_file' => null,
             // 'banner_file' => null,
             // 'trailler_file' => null,
