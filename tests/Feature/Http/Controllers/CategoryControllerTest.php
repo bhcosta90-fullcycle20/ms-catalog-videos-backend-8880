@@ -98,7 +98,6 @@ class CategoryControllerTest extends TestCase
             'name' => 'teste'
         ], $data + [
             'is_active' => true,
-            'description' => null,
             'deleted_at' => null,
         ]);
 

@@ -42,6 +42,8 @@ trait TestSave
         array $testData,
         array $testJsonData = null
     ): TestResponse {
+        $model = new $this->model();
+
         /** @var TestResponse $response */
         $response = $this->putJson($this->routePut(), $sendData);
 
@@ -51,16 +53,21 @@ trait TestSave
 
         $id = $response->json('data.id') ?: $response->json('id');
 
-        $model = new $this->model();
         $keyName = $model->getKeyName();
         $testData += [
             $keyName => $id,
         ];
 
-        $this->assertDatabaseHas($model->getTable(), $testData);
+        try {
+            $this->assertDatabaseHas($model->getTable(), $testData);
 
-        $testResponse = $testJsonData ?: $testData;
-        $response->assertJsonFragment($testResponse);
+            $testResponse = $testJsonData ?: $testData;
+            $response->assertJsonFragment($testResponse);
+
+        } catch(Exception $e){
+            dump($sendData, $response->json());
+            throw $e;
+        }
 
         return $response;
     }

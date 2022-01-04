@@ -8,11 +8,12 @@ use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 use App\Models\Genre as Model;
 use Illuminate\Support\Facades\Lang;
+use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
 
 class GenreControllerTest extends TestCase
 {
-    use RefreshDatabase, TestValidation;
+    use RefreshDatabase, TestValidation, TestSave;
 
     private Model $model;
 
@@ -73,41 +74,36 @@ class GenreControllerTest extends TestCase
 
     public function testCreated()
     {
-        $response = $this->postJson($this->routeStore(), [
-            'name' => 'teste',
-        ])->assertStatus(201);
+        $this->assertStore($data = [
+            'name' => 'teste'
+        ], $data + [
+            'is_active' => true,
+            'deleted_at' => null,
+        ]);
 
-        $obj = Model::find($response->json('id') ?: $response->json('data.id'));
-        $response->assertJson($obj->toArray());
-        $this->assertTrue($response->json('is_active'));
-
-        $response = $this->postJson($this->routeStore(), [
+        $this->assertStore($data = [
             'name' => 'teste',
             'is_active' => false,
-        ])->assertStatus(201)
-            ->assertJsonFragment([
-                'is_active' => false,
-            ]);
+        ], $data + [
+            'is_active' => false,
+        ]);
     }
 
     public function testUpdated()
     {
-        $this->putJson($this->routePut(), [
-            'name' => 'teste',
+        $this->assertUpdate($data = [
+            'name' => 'teste'
+        ], $data + [
             'is_active' => true,
-        ])->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => 'teste',
-                'is_active' => true,
-            ]);
+            'deleted_at' => null,
+        ]);
 
-        $this->putJson($this->routePut(), [
+        $this->assertUpdate($data = [
             'name' => 'teste',
             'is_active' => false,
-        ])->assertStatus(200)
-            ->assertJsonFragment([
-                'is_active' => false,
-            ]);
+        ], $data + [
+            'is_active' => false,
+        ]);
     }
 
     public function testDestroy()
@@ -128,5 +124,10 @@ class GenreControllerTest extends TestCase
     protected function routePut()
     {
         return '/genres/' . $this->model->id;
+    }
+
+    protected function model()
+    {
+        return new Model;
     }    
 }
