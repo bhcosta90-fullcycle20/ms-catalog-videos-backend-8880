@@ -38,6 +38,8 @@ class GenreTest extends TestCase
         $data = Model::create(['name' => 'name']);
         $data->refresh();
 
+        \Ramsey\Uuid\Uuid::isValid($data->uuid);
+
         $this->assertEquals('name', $data->name);
         $this->assertNull($data->description);
         $this->assertTrue($data->is_active);
