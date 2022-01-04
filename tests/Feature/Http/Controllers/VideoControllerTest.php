@@ -14,10 +14,20 @@ class VideoControllerTest extends TestCase
 
     private Model $model;
 
+    private $sendData = [];
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->model = Model::factory()->create();
+
+        $this->sendData = [
+            'title' => 'title',
+            'description' => 'description',
+            'year_launched' => 1990,
+            'rating' => Model::RATINGS[0],
+            'duration' => 60
+        ];
     }
 
     public function testIndex()
@@ -112,27 +122,25 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationUpdate($data, "in");
     }
 
-    // public function testCreated()
-    // {
-    //     $datas = [
-    //         [
-    //             'name' => 'teste',
-    //             'type' => Model::TYPE_ACTOR,
-    //         ],
-    //         [
-    //             'name' => 'teste',
-    //             'type' => Model::TYPE_DIRECTOR,
-    //         ]
-    //     ];
-    //     foreach($datas as $data)
-    //     {
-    //         $response = $this->assertStore($data, $data + [
-    //             'deleted_at' => null,
-    //         ]);
+    public function testCreated()
+    {
+        $response = $this->assertStore($this->sendData, $this->sendData + [
+            'opened' => false,
+        ]);
+        $response->assertJsonStructure(['created_at', 'updated_at']);
 
-    //         $response->assertJsonStructure(['created_at', 'updated_at']);
-    //     }
-    // }
+        $response = $this->assertStore([
+            'opened' => true
+        ] + $this->sendData, [
+            'opened' => true,
+        ] + $this->sendData);
+
+        $response = $this->assertStore([
+            'rating' => Model::RATINGS[1]
+        ] + $this->sendData, [
+            'rating' => Model::RATINGS[1],
+        ] + $this->sendData);
+    }
 
     // public function testUpdated()
     // {
