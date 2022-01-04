@@ -2,21 +2,21 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Models\Category as Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
+use App\Models\Genre as Model;
+use Illuminate\Support\Facades\Lang;
 
-class CategoryControllerTest extends TestCase
+class GenreControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     public function testIndex()
     {
         $category = Model::factory()->create();
-        $response = $this->getJson('/categories');
+        $response = $this->getJson('/genres');
 
         $response->assertStatus(200)
             ->assertJson([$category->toArray()]);
@@ -25,7 +25,7 @@ class CategoryControllerTest extends TestCase
     public function testShow()
     {
         $category = Model::factory()->create();
-        $response = $this->getJson('/categories/' . $category->id);
+        $response = $this->getJson('/genres/' . $category->id);
 
         $response->assertStatus(200)
             ->assertJson($category->toArray());
@@ -33,22 +33,22 @@ class CategoryControllerTest extends TestCase
 
     public function testCreatedInvalidationData()
     {
-        $response = $this->postJson('/categories');
+        $response = $this->postJson('/genres');
 
         $this->assertInvalidationRequired($response);
 
-        $response = $this->postJson('/categories', [
+        $response = $this->postJson('/genres', [
             'name' => 'a'
         ]);
 
         $this->assertInvalidationMin($response);
 
-        $response = $this->postJson('/categories', [
+        $response = $this->postJson('/genres', [
             'name' => str_repeat('a', 500)
         ]);
         $this->assertInvalidationMax($response);
 
-        $response = $this->postJson('/categories', [
+        $response = $this->postJson('/genres', [
             'is_active' => 'a',
         ]);
 
@@ -57,23 +57,20 @@ class CategoryControllerTest extends TestCase
 
     public function testCreated()
     {
-        $response = $this->postJson('/categories', [
+        $response = $this->postJson('/genres', [
             'name' => 'teste',
         ])->assertStatus(201);
 
         $obj = Model::find($response->json('id') ?: $response->json('data.id'));
         $response->assertJson($obj->toArray());
         $this->assertTrue($response->json('is_active'));
-        $this->assertNull($response->json('description'));
 
-        $response = $this->postJson('/categories', [
+        $response = $this->postJson('/genres', [
             'name' => 'teste',
             'is_active' => false,
-            'description' => 'teste',
         ])->assertStatus(201)
             ->assertJsonFragment([
                 'is_active' => false,
-                'description' => 'teste',
             ]);
     }
 
@@ -83,25 +80,21 @@ class CategoryControllerTest extends TestCase
             'is_active' => false
         ]);
 
-        $this->putJson('/categories/' . $objUpdate->id, [
+        $this->putJson('/genres/' . $objUpdate->id, [
             'name' => 'teste',
             'is_active' => true,
-            'description' => 'teste',
         ])->assertStatus(200)
             ->assertJsonFragment([
                 'name' => 'teste',
-                'description' => 'teste',
                 'is_active' => true,
             ]);
 
-        $this->putJson('/categories/' . $objUpdate->id, [
+        $this->putJson('/genres/' . $objUpdate->id, [
             'name' => 'teste',
             'is_active' => false,
-            'description' => '',
         ])->assertStatus(200)
             ->assertJsonFragment([
                 'is_active' => false,
-                'description' => null,
             ]);
     }
 

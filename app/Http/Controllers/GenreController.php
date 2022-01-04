@@ -15,6 +15,7 @@ class GenreController extends Controller
 
     public function index()
     {
+        return Genre::all();
         return GenreResource::collection(Genre::paginate());
     }
 
@@ -25,11 +26,13 @@ class GenreController extends Controller
         $genre = Genre::create($data);
         $genre->refresh();
 
+        return $genre;
         return new GenreResource($genre);
     }
 
     public function show(Genre $genre)
     {
+        return $genre;
         return new GenreResource($genre);
     }
 
@@ -38,6 +41,7 @@ class GenreController extends Controller
         $data = $this->validate($request, $this->rules);
         $genre->update($data);
 
+        return $genre;
         return new GenreResource($genre);
     }
 
