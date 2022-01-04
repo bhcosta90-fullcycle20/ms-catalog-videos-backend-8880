@@ -15,7 +15,6 @@ class GenreFactory extends Factory
     {
         return [
             'name' => $this->faker->unique()->name(),
-            'description' => rand(0, 1) ? $this->faker->unique()->sentence(6) : null,
         ];
     }
 }

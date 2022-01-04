@@ -13,7 +13,6 @@ class GenreTest extends TestCase
 
         $this->assertEquals([
             'name',
-            'description',
             'is_active',
         ], $obj->getFillable());
     }

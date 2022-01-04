@@ -26,7 +26,6 @@ class GenreTest extends TestCase
         $this->assertEqualsCanonicalizing([
             'uuid',
             'name',
-            'description',
             'is_active',
             'created_at',
             'updated_at',
@@ -42,19 +41,6 @@ class GenreTest extends TestCase
         $this->assertEquals('name', $data->name);
         $this->assertNull($data->description);
         $this->assertTrue($data->is_active);
-    }
-
-    public function testCreatedIfDescription()
-    {
-        $data = Model::create(['name' => 'name', 'description' => null]);
-        $data->refresh();
-
-        $this->assertNull($data->description);
-
-        $data = Model::create(['name' => 'name', 'description' => 'description']);
-        $data->refresh();
-
-        $this->assertEquals('description', $data->description);
     }
 
     public function testCreatedIfIsActive()
@@ -75,7 +61,6 @@ class GenreTest extends TestCase
         $data = Model::factory()->create();
         $fields = [
             'name' => 'name',
-            'description' => 'description',
             'is_active' => false,
         ];
         $data->update($fields);
