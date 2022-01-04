@@ -24,7 +24,7 @@ class CategoryTest extends TestCase
         $this->assertCount(1, $data);
 
         $this->assertEqualsCanonicalizing([
-            'uuid',
+            'id',
             'name',
             'description',
             'is_active',
@@ -39,7 +39,7 @@ class CategoryTest extends TestCase
         $data = Model::create(['name' => 'name']);
         $data->refresh();
 
-        \Ramsey\Uuid\Uuid::isValid($data->uuid);
+        \Ramsey\Uuid\Uuid::isValid($data->id);
 
         $this->assertEquals('name', $data->name);
         $this->assertNull($data->description);
@@ -91,9 +91,9 @@ class CategoryTest extends TestCase
     {
         $data = Model::factory()->create();
         $data->delete();
-        $this->assertNull(Model::find($data->uuid));
+        $this->assertNull(Model::find($data->id));
 
         $data->restore();
-        $this->assertNotNull(Model::find($data->uuid));
+        $this->assertNotNull(Model::find($data->id));
     }
 }

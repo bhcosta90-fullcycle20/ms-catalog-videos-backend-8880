@@ -33,7 +33,7 @@ class CategoryTest extends TestCase
     public function testKeyName()
     {
         $obj = $this->getModel();
-        $this->assertEquals('uuid', $obj->getKeyName());
+        $this->assertEquals('id', $obj->getKeyName());
     }
 
     public function testIfUseTraits()
@@ -53,7 +53,8 @@ class CategoryTest extends TestCase
         $obj = $this->getModel();
         $this->assertEqualsCanonicalizing([
             'is_active' => 'boolean',
-            'deleted_at' => 'datetime'
+            'deleted_at' => 'datetime',
+            'uuid' => 'string',
         ], $obj->getCasts());
     }
 

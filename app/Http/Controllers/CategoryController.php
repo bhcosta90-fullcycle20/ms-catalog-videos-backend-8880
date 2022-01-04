@@ -16,7 +16,8 @@ class CategoryController extends Controller
 
     public function index()
     {
-        return CategoryResource::collection(Category::paginate());
+        return Category::all();
+        // return CategoryResource::collection(Category::paginate());
     }
 
     public function store(Request $request)
@@ -31,6 +32,7 @@ class CategoryController extends Controller
 
     public function show(Category $category)
     {
+        return $category;
         return new CategoryResource($category);
     }
 
