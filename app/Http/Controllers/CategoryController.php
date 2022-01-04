@@ -3,20 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    private $rules = [
+        'name' => 'required|min:3|max:100',
+        'description' => 'nullable|max:1000',
+        'is_active' => 'nullable|boolean',
+    ];
+
     public function index()
     {
         return CategoryResource::collection(Category::paginate());
     }
 
-    public function store(StoreCategoryRequest $request)
+    public function store(Request $request)
     {
-        //
+        $data = $this->validate($request, $this->rules);
+
+        $category = Category::create($data);
+        $category->refresh();
+
+        return new CategoryResource($category);
     }
 
     public function show(Category $category)
@@ -24,12 +34,18 @@ class CategoryController extends Controller
         return new CategoryResource($category);
     }
 
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(Request $request, Category $category)
     {
+        $data = $this->validate($request, $this->rules);
+        $category->update($data);
+
+        return new CategoryResource($category);
     }
 
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+
+        return response()->noContent();
     }
 }
