@@ -69,4 +69,25 @@ class GenreTest extends TestCase
 
         $this->assertTrue($data->is_active);
     }
+
+    public function testUpdatedName()
+    {
+        $data = Model::factory()->create();
+        $data->update(['name' => 'name']);
+        $this->assertEquals('name', $data->name);
+    }
+
+    public function testUpdatedDescription()
+    {
+        $data = Model::factory()->create();
+        $data->update(['description' => 'description']);
+        $this->assertEquals('description', $data->description);
+    }
+
+    public function testUpdatedActive()
+    {
+        $data = Model::factory()->create();
+        $data->update(['is_active' => false]);
+        $this->assertFalse($data->is_active);
+    }
 }
