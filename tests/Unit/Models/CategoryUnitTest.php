@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Genre as Model;
+use App\Models\Category as Model;
 use PHPUnit\Framework\TestCase;
 
-class GenreTest extends TestCase
+class CategoryUnitTest extends TestCase
 {
     public function testFillable()
     {
@@ -13,6 +13,7 @@ class GenreTest extends TestCase
 
         $this->assertEquals([
             'name',
+            'description',
             'is_active',
         ], $obj->getFillable());
     }
@@ -26,7 +27,7 @@ class GenreTest extends TestCase
     public function testIncrementing()
     {
         $obj = $this->getModel();
-        $this->assertFalse($obj->getIncrementing());
+        $this->assertEquals(false, $obj->getIncrementing());
     }
 
     public function testKeyName()

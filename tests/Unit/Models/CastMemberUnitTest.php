@@ -5,7 +5,7 @@ namespace Tests\Unit\Models;
 use App\Models\CastMember as Model;
 use PHPUnit\Framework\TestCase;
 
-class CastMemberTest extends TestCase
+class CastMemberUnitTest extends TestCase
 {
     public function testFillable()
     {
