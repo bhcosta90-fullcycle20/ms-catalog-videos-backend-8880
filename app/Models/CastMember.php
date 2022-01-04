@@ -14,8 +14,8 @@ class CastMember extends Model
     const TYPE_ACTOR = 2;
 
     const TYPES = [
-        self::TYPE_DIRECTOR => 'Director',
-        self::TYPE_ACTOR => 'Actor',
+        self::TYPE_DIRECTOR,
+        self::TYPE_ACTOR,
     ];
 
     protected $fillable = [

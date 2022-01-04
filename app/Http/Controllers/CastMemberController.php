@@ -16,7 +16,7 @@ class CastMemberController extends Abstracts\BasicCrudController
         return [
             'name' => 'required|min:3|max:100',
             'is_active' => 'nullable|boolean',
-            'type' => "required|in:" . implode(',', array_keys(CastMember::TYPES)),
+            'type' => "required|in:" . implode(',', CastMember::TYPES),
         ];
     }
 

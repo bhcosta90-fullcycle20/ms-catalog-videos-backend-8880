@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 use App\Models\CastMember as Model;
-use App\Models\CastMember;
 use Illuminate\Support\Facades\Lang;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
@@ -79,11 +78,11 @@ class CastMemberControllerTest extends TestCase
         $datas = [
             [
                 'name' => 'teste',
-                'type' => CastMember::TYPE_ACTOR,
+                'type' => Model::TYPE_ACTOR,
             ],
             [
                 'name' => 'teste',
-                'type' => CastMember::TYPE_DIRECTOR,
+                'type' => Model::TYPE_DIRECTOR,
             ]
         ];
         foreach($datas as $data)
@@ -99,14 +98,14 @@ class CastMemberControllerTest extends TestCase
     public function testUpdated()
     {
         $this->model = Model::factory()->create([
-            'type' => CastMember::TYPE_DIRECTOR,
+            'type' => Model::TYPE_DIRECTOR,
         ]);
 
         $response = $this->assertUpdate($data = [
             'name' => 'teste',
-            'type' => CastMember::TYPE_ACTOR,
+            'type' => Model::TYPE_ACTOR,
         ], $data + [
-            'type' => CastMember::TYPE_ACTOR,
+            'type' => Model::TYPE_ACTOR,
             'deleted_at' => null,
         ]);
 
