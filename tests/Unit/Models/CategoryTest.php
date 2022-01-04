@@ -39,15 +39,22 @@ class CategoryTest extends TestCase
     public function testIfUseTraits()
     {
         $traits = [
+            \Illuminate\Database\Eloquent\Factories\HasFactory::class,
             \Illuminate\Database\Eloquent\SoftDeletes::class,
             \App\Models\Traits\Uuid::class,
         ];
 
         $modelTraits = array_keys(class_uses(Model::class));
+        $this->assertEqualsCanonicalizing($traits, $modelTraits);
+    }
 
-        foreach ($traits as $trait) {
-            $this->assertContains($trait, $modelTraits);
-        }
+    public function testCasts()
+    {
+        $obj = $this->getModel();
+        $this->assertEqualsCanonicalizing([
+            'is_active' => 'boolean',
+            'deleted_at' => 'datetime'
+        ], $obj->getCasts());
     }
 
     private function getModel()
