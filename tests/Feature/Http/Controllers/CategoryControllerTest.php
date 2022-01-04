@@ -8,14 +8,23 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
+use Tests\Traits\TestValidation;
 
 class CategoryControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, TestValidation;
+
+    private Model $model;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->model = Model::factory()->create();
+    }
 
     public function testIndex()
     {
-        $category = Model::factory()->create();
+        $category = $this->model;
         $response = $this->getJson('/categories');
 
         $response->assertStatus(200)
@@ -24,7 +33,7 @@ class CategoryControllerTest extends TestCase
 
     public function testShow()
     {
-        $category = Model::factory()->create();
+        $category = $this->model;
         $response = $this->getJson('/categories/' . $category->id);
 
         $response->assertStatus(200)
@@ -33,31 +42,38 @@ class CategoryControllerTest extends TestCase
 
     public function testCreatedInvalidationData()
     {
-        $response = $this->postJson('/categories');
+        $data = [
+            'name' => '',
+        ];
+        $this->assertInvalidationStore($data, 'required');
+        $this->assertInvalidationUpdate($data, 'required');
 
-        $this->assertInvalidationRequired($response);
+        $data = [
+            'name' => 'a',
+        ];
+        
+        $this->assertInvalidationStore($data, 'min.string', ['min' => 3]);
+        $this->assertInvalidationUpdate($data, 'min.string', ['min' => 3]);
 
-        $response = $this->postJson('/categories', [
-            'name' => 'a'
-        ]);
-
-        $this->assertInvalidationMin($response);
-
-        $response = $this->postJson('/categories', [
+        $data = [
             'name' => str_repeat('a', 500)
-        ]);
-        $this->assertInvalidationMax($response);
+        ];
+        
+        $this->assertInvalidationStore($data, 'max.string', ['max' => 100]);
+        $this->assertInvalidationUpdate($data, 'max.string', ['max' => 100]);
 
-        $response = $this->postJson('/categories', [
+
+        $data = [
             'is_active' => 'a',
-        ]);
+        ];
 
-        $this->assertInvalidationBoolean($response);
+        $this->assertInvalidationStore($data, 'boolean');
+        $this->assertInvalidationUpdate($data, 'boolean');
     }
 
     public function testCreated()
     {
-        $response = $this->postJson('/categories', [
+        $response = $this->postJson($this->routeStore(), [
             'name' => 'teste',
         ])->assertStatus(201);
 
@@ -66,7 +82,7 @@ class CategoryControllerTest extends TestCase
         $this->assertTrue($response->json('is_active'));
         $this->assertNull($response->json('description'));
 
-        $response = $this->postJson('/categories', [
+        $response = $this->postJson($this->routeStore(), [
             'name' => 'teste',
             'is_active' => false,
             'description' => 'teste',
@@ -79,11 +95,7 @@ class CategoryControllerTest extends TestCase
 
     public function testUpdated()
     {
-        $objUpdate = Model::factory()->create([
-            'is_active' => false
-        ]);
-
-        $this->putJson('/categories/' . $objUpdate->id, [
+        $this->putJson($this->routePut(), [
             'name' => 'teste',
             'is_active' => true,
             'description' => 'teste',
@@ -94,7 +106,7 @@ class CategoryControllerTest extends TestCase
                 'is_active' => true,
             ]);
 
-        $this->putJson('/categories/' . $objUpdate->id, [
+        $this->putJson($this->routePut(), [
             'name' => 'teste',
             'is_active' => false,
             'description' => '',
@@ -107,40 +119,22 @@ class CategoryControllerTest extends TestCase
 
     public function testDestroy()
     {
-        $objUpdate = Model::factory()->create();
-        $this->deleteJson('/categories/' . $objUpdate->id)
+        $objUpdate = $this->model;
+        $this->deleteJson($this->routePut())
             ->assertStatus(204);
         
         $this->assertNull(Model::find($objUpdate->id));
         $this->assertNotNull(Model::withTrashed()->find($objUpdate->id));
     }
 
-    protected function assertInvalidationRequired(TestResponse $response)
+    protected function routeStore()
     {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonMissingValidationErrors(['is_active'])
-            ->assertJsonFragment([Lang::get("validation.required", ['attribute' => 'name'])]);
+        return '/categories';
     }
 
-    protected function assertInvalidationMin(TestResponse $response)
+    protected function routePut()
     {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonFragment([Lang::get("validation.min.string", ['attribute' => 'name', 'min' => 3])]);
-    }
-
-    protected function assertInvalidationMax(TestResponse $response)
-    {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonFragment([Lang::get("validation.max.string", ['attribute' => 'name', 'max' => 100])]);
-    }
-
-    protected function assertInvalidationBoolean(TestResponse $response)
-    {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['is_active'])
-            ->assertJsonFragment([Lang::get("validation.boolean", ['attribute' => 'is active'])]);
+        $obj = $this->model;
+        return '/categories/' . $obj->id;
     }
 }
