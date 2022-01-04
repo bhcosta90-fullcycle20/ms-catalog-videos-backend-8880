@@ -105,6 +105,16 @@ class CategoryControllerTest extends TestCase
             ]);
     }
 
+    public function testDestroy()
+    {
+        $objUpdate = Model::factory()->create();
+        $this->deleteJson('/categories/' . $objUpdate->id)
+            ->assertStatus(204);
+        
+        $this->assertNull(Model::find($objUpdate->id));
+        $this->assertNotNull(Model::withTrashed()->find($objUpdate->id));
+    }
+
     protected function assertInvalidationRequired(TestResponse $response)
     {
         $response->assertStatus(422)
