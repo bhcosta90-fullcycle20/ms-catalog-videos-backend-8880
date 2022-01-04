@@ -13,7 +13,6 @@ class CastMemberTest extends TestCase
 
         $this->assertEquals([
             'name',
-            'is_active',
             'type',
         ], $obj->getFillable());
     }
@@ -52,7 +51,6 @@ class CastMemberTest extends TestCase
     {
         $obj = $this->getModel();
         $this->assertEqualsCanonicalizing([
-            'is_active' => 'boolean',
             'deleted_at' => 'datetime',
             'uuid' => 'string',
             'type' => 'integer',

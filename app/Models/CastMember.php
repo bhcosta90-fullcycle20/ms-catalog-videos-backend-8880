@@ -20,13 +20,11 @@ class CastMember extends Model
 
     protected $fillable = [
         'name',
-        'is_active',
         'type',
     ];
 
     protected $casts = [
         'id' => 'string',
-        'is_active' => 'boolean',
         'type' => 'integer'
     ];
 }

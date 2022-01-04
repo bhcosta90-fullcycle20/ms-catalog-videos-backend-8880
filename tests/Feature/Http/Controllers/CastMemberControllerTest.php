@@ -67,13 +67,6 @@ class CastMemberControllerTest extends TestCase
 
 
         $data = [
-            'is_active' => 'a',
-        ];
-
-        $this->assertInvalidationStore($data, 'boolean');
-        $this->assertInvalidationUpdate($data, 'boolean');
-
-        $data = [
             'type' => 'a',
         ];
 
@@ -96,7 +89,6 @@ class CastMemberControllerTest extends TestCase
         foreach($datas as $data)
         {
             $response = $this->assertStore($data, $data + [
-                'is_active' => true,
                 'deleted_at' => null,
             ]);
 
