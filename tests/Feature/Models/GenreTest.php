@@ -71,4 +71,14 @@ class GenreTest extends TestCase
             $this->assertEquals($v, $data->{$k});
         }
     }
+
+    public function testDelete()
+    {
+        $data = Model::factory()->create();
+        $data->delete();
+        $this->assertNull(Model::find($data->uuid));
+
+        $data->restore();
+        $this->assertNotNull(Model::find($data->uuid));
+    }
 }
