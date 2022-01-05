@@ -21,12 +21,41 @@ class VideoController extends Abstracts\BasicCrudController
             'year_launched' => 'required|date_format:Y',
             'opened' => 'nullable|boolean',
             'rating' => "required|in:" . implode(',', Video::RATINGS),
-            'duration' => 'required|integer'
+            'duration' => 'required|integer',
+            'categories_id' => "required|array|exists:categories,id",
+            'genres_id' => "required|array|exists:genres,id",
         ];
     }
 
     protected function rulePut()
     {
         return $this->ruleStore();
+    }
+
+    public function store(Request $request)
+    {
+        $data = $this->validate($request, $this->ruleStore());
+        
+        /** @var Video $obj */
+        $obj = $this->model()::create($data);
+        $obj->refresh();
+
+        $obj->categories()->attach(array_unique($data['categories_id']));
+        $obj->genres()->attach(array_unique($data['genres_id']));
+        return $obj;
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = $this->validate($request, $this->rulePut());
+        
+        /** @var Video $obj */
+        $obj = $this->findOrFail($id);
+        $obj->update($data);
+
+        $obj->categories()->sync(array_unique($data['categories_id']));
+        $obj->genres()->sync(array_unique($data['genres_id']));
+
+        return $obj;
     }
 }

@@ -16,7 +16,7 @@ class CreateCategoryVideoTable extends Migration
         Schema::create('category_video', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('category_id')->constrained('categories');
-            $table->foreignUuid('video_id')->constrained('video_id');
+            $table->foreignUuid('video_id')->constrained('videos');
             $table->timestamps();
             $table->unique(['category_id', 'video_id']);
         });

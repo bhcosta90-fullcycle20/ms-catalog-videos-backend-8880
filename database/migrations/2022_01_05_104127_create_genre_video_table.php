@@ -16,7 +16,7 @@ class CreateGenreVideoTable extends Migration
         Schema::create('genre_video', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('genre_id')->constrained('genres');
-            $table->foreignUuid('video_id')->constrained('video_id');
+            $table->foreignUuid('video_id')->constrained('videos');
             $table->timestamps();
             $table->unique(['genre_id', 'video_id']);
         });

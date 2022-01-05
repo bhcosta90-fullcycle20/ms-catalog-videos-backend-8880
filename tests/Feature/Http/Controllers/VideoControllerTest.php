@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Genre;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Video as Model;
@@ -14,6 +16,10 @@ class VideoControllerTest extends TestCase
 
     private Model $model;
 
+    private Category $category;
+
+    private Genre $genre;
+
     private $sendData = [];
 
     protected function setUp(): void
@@ -23,12 +29,15 @@ class VideoControllerTest extends TestCase
             'opened' => false
         ]);
 
+        $this->category = Category::factory()->create();
+        $this->genre = Genre::factory()->create();
+
         $this->sendData = [
             'title' => 'title',
             'description' => 'description',
             'year_launched' => 1990,
             'rating' => Model::RATINGS[0],
-            'duration' => 60
+            'duration' => 60,
         ];
     }
 
@@ -58,6 +67,8 @@ class VideoControllerTest extends TestCase
             'year_launched' => '',
             'rating' => '',
             'duration' => '',
+            'categories_id' => '',
+            'genres_id' => '',
         ];
 
         $this->assertInvalidationStore($data, "required");
@@ -124,6 +135,28 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationUpdate($data, "in");
     }
 
+    public function testInvalidateArray()
+    {
+        $data = [
+            'categories_id' => '123',
+            'genres_id' => '123',
+        ];
+
+        $this->assertInvalidationStore($data, "array");
+        $this->assertInvalidationUpdate($data, "array");
+    }
+
+    public function testInvalidateExists()
+    {
+        $data = [
+            'categories_id' => ['123'],
+            'genres_id' => ['123'],
+        ];
+
+        $this->assertInvalidationStore($data, "exists");
+        $this->assertInvalidationUpdate($data, "exists");
+    }
+
     public function testCreatedAndUpdate()
     {
         $datas = [
@@ -142,6 +175,9 @@ class VideoControllerTest extends TestCase
         ];
 
         foreach($datas as $data){
+            $data['send_data']['categories_id'] = [$this->category->id];
+            $data['send_data']['genres_id'] = [$this->genre->id];
+
             $response = $this->assertStore($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['created_at', 'updated_at']);
 
