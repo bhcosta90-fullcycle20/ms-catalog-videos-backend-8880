@@ -19,7 +19,9 @@ class VideoControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->model = Model::factory()->create();
+        $this->model = Model::factory()->create([
+            'opened' => false
+        ]);
 
         $this->sendData = [
             'title' => 'title',
@@ -122,54 +124,41 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationUpdate($data, "in");
     }
 
-    public function testCreated()
+    public function testCreatedAndUpdate()
     {
-        $response = $this->assertStore($this->sendData, $this->sendData + [
-            'opened' => false,
-        ]);
-        $response->assertJsonStructure(['created_at', 'updated_at']);
+        $datas = [
+            [
+                'send_data' => $this->sendData,
+                'test_data' => $this->sendData + ['opened' => false]
+            ],
+            [
+                'send_data' => $this->sendData + ['opened' => true],
+                'test_data' => $this->sendData + ['opened' => true]
+            ],
+            [
+                'send_data' => $this->sendData + ['rating' => Model::RATINGS[3]],
+                'test_data' => $this->sendData + ['rating' => Model::RATINGS[3]]
+            ]
+        ];
 
-        $response = $this->assertStore([
-            'opened' => true
-        ] + $this->sendData, [
-            'opened' => true,
-        ] + $this->sendData);
+        foreach($datas as $data){
+            $response = $this->assertStore($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
+            $response->assertJsonStructure(['created_at', 'updated_at']);
 
-        $response = $this->assertStore([
-            'rating' => Model::RATINGS[1]
-        ] + $this->sendData, [
-            'rating' => Model::RATINGS[1],
-        ] + $this->sendData);
+            $response = $this->assertUpdate($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
+            $response->assertJsonStructure(['created_at', 'updated_at']);
+        }
     }
 
-    // public function testUpdated()
-    // {
-    //     $this->model = Model::factory()->create([
-    //         'type' => CastMember::TYPE_DIRECTOR,
-    //     ]);
+    public function testDestroy()
+    {
+        $objUpdate = $this->model;
+        $this->deleteJson($this->routePut())
+            ->assertStatus(204);
 
-    //     $response = $this->assertUpdate($data = [
-    //         'name' => 'teste',
-    //         'type' => CastMember::TYPE_ACTOR,
-    //     ], $data + [
-    //         'type' => CastMember::TYPE_ACTOR,
-    //         'deleted_at' => null,
-    //     ]);
-
-    //     $response->assertJsonStructure([
-    //         'created_at', 'updated_at',
-    //     ]);
-    // }
-
-    // public function testDestroy()
-    // {
-    //     $objUpdate = $this->model;
-    //     $this->deleteJson($this->routePut())
-    //         ->assertStatus(204);
-
-    //     $this->assertNull(Model::find($objUpdate->id));
-    //     $this->assertNotNull(Model::withTrashed()->find($objUpdate->id));
-    // }
+        $this->assertNull(Model::find($objUpdate->id));
+        $this->assertNotNull(Model::withTrashed()->find($objUpdate->id));
+    }
 
     protected function routeStore()
     {
