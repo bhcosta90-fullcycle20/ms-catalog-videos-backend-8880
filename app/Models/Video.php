@@ -80,10 +80,15 @@ class Video extends Model
         return $saved;
     }
 
-    protected function handleRelations($data, $method = 'sync'): self
+    public function handleRelations($data, $method = 'sync'): self
     {
-        $this->categories()->$method(array_unique($data['categories_id'] ?? []));
-        $this->genres()->$method(array_unique($data['genres_id'] ?? []));
+        if (isset($data['categories_id'])) {
+            $this->categories()->$method(array_unique($data['categories_id']));
+        }
+
+        if (isset($data['genres_id'])) {
+            $this->genres()->$method(array_unique($data['genres_id']));
+        }
         return $this;
     }
 }
