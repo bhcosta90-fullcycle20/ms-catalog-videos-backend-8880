@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Abstracts;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 abstract class BasicCrudController extends Controller
 {
-    protected abstract function model();
+    protected abstract function model(): Model;
 
     protected abstract function ruleStore();
 

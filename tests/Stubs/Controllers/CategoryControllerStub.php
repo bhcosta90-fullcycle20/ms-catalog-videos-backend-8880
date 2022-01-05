@@ -3,11 +3,12 @@
 namespace Tests\Stubs\Controllers;
 
 use App\Http\Controllers\Abstracts\BasicCrudController;
+use Illuminate\Database\Eloquent\Model;
 use Tests\Stubs\Models\CategoryStub;
 
 class CategoryControllerStub extends BasicCrudController
 {
-    protected function model()
+    protected function model(): Model
     {
         return new CategoryStub;
     }

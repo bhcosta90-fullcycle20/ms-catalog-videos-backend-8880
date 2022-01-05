@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 class CategoryController extends Abstracts\BasicCrudController
@@ -14,7 +15,7 @@ class CategoryController extends Abstracts\BasicCrudController
         'is_active' => 'nullable|boolean',
     ];
 
-    protected function model()
+    protected function model(): Model
     {
         return new Category;
     }

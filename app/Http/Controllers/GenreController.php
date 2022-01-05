@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Genre;
+use Illuminate\Database\Eloquent\Model;
 
 class GenreController extends Abstracts\BasicCrudController
 {
@@ -11,7 +12,7 @@ class GenreController extends Abstracts\BasicCrudController
         'is_active' => 'nullable|boolean',
     ];
 
-    protected function model()
+    protected function model(): Model
     {
         return new Genre;
     }

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\CastMember;
+use Illuminate\Database\Eloquent\Model;
 
 class CastMemberController extends Abstracts\BasicCrudController
 {
-    protected function model()
+    protected function model(): Model
     {
         return new CastMember();
     }
