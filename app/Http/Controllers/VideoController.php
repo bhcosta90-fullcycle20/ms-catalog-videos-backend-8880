@@ -42,41 +42,6 @@ class VideoController extends Abstracts\BasicCrudController
         return $this->ruleStore();
     }
 
-    public function store(Request $request)
-    {
-        $this->addRuleGenreHasCategory($request);
-
-        $data = $this->validate($request, $this->ruleStore());
-        $self = $this;
-
-        $obj = DB::transaction(function () use ($data, $self) {
-            $obj = $this->model()::create($data);
-            $self->handleRelations($obj, $data);
-            return $obj;
-        });
-
-        $obj->refresh();
-        return $obj;
-    }
-
-    public function update(Request $request, $id)
-    {
-        $this->addRuleGenreHasCategory($request);
-
-        $data = $this->validate($request, $this->rulePut());
-        $obj = $this->findOrFail($id);
-
-        $self = $this;
-        $obj = DB::transaction(function () use ($obj, $data, $self) {
-            /** @var Video $obj */
-            $obj->update($data);
-            $self->handleRelations($obj, $data);
-            return $obj;
-        });
-
-        return $obj;
-    }
-
     protected function handleRelations(Video $video, $data): Video
     {
         $video->categories()->sync(array_unique($data['categories_id']));
