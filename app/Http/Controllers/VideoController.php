@@ -24,8 +24,8 @@ class VideoController extends Abstracts\BasicCrudController
             'opened' => 'nullable|boolean',
             'rating' => "required|in:" . implode(',', Video::RATINGS),
             'duration' => 'required|integer',
-            'categories_id' => "required|array|exists:categories,id",
-            'genres_id' => "required|array|exists:genres,id",
+            'categories_id' => "required|array|exists:categories,id,deleted_at,NULL",
+            'genres_id' => "required|array|exists:genres,id,deleted_at,NULL",
         ];
     }
 

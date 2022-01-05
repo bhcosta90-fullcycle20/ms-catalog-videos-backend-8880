@@ -154,6 +154,19 @@ class VideoControllerTest extends TestCase
 
         $this->assertInvalidationStore($data, "exists");
         $this->assertInvalidationUpdate($data, "exists");
+
+        $category = Category::factory()->create();
+        $category->delete();
+        $genre = Genre::factory()->create();
+        $genre->delete();
+
+        $data = [
+            'categories_id' => [$category->id],
+            'genres_id' => [$genre->id],
+        ];
+
+        $this->assertInvalidationStore($data, "exists");
+        $this->assertInvalidationUpdate($data, "exists");
     }
 
     public function testCreatedAndUpdate()

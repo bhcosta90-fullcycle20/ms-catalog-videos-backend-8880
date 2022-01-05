@@ -46,6 +46,7 @@ class GenreControllerTest extends TestCase
     {
         $data = [
             'name' => '',
+            'categories_id' => '',
         ];
         $this->assertInvalidationStore($data, 'required');
         $this->assertInvalidationUpdate($data, 'required');
@@ -71,6 +72,30 @@ class GenreControllerTest extends TestCase
 
         $this->assertInvalidationStore($data, 'boolean');
         $this->assertInvalidationUpdate($data, 'boolean');
+
+        $data = [
+            'categories_id' => 'a',
+        ];
+
+        $this->assertInvalidationStore($data, 'array');
+        $this->assertInvalidationUpdate($data, 'array');
+
+        $data = [
+            'categories_id' => ['a'],
+        ];
+
+        $this->assertInvalidationStore($data, 'exists');
+        $this->assertInvalidationUpdate($data, 'exists');
+
+        $category = Category::factory()->create();
+        $category->delete();
+
+        $data = [
+            'categories_id' => [$category->id],
+        ];
+
+        $this->assertInvalidationStore($data, 'exists');
+        $this->assertInvalidationUpdate($data, 'exists');
     }
 
     public function testCreated()
