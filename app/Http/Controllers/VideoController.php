@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Video;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VideoController extends Abstracts\BasicCrudController
 {
@@ -35,26 +37,31 @@ class VideoController extends Abstracts\BasicCrudController
     public function store(Request $request)
     {
         $data = $this->validate($request, $this->ruleStore());
-        
-        /** @var Video $obj */
-        $obj = $this->model()::create($data);
-        $obj->refresh();
 
-        $obj->categories()->attach(array_unique($data['categories_id']));
-        $obj->genres()->attach(array_unique($data['genres_id']));
+        $obj = DB::transaction(function () use ($data) {
+            $obj = $this->model()::create($data);
+            $obj->categories()->attach(array_unique($data['categories_id']));
+            $obj->genres()->attach(array_unique($data['genres_id']));
+            return $obj;
+        });
+
+        $obj->refresh();
         return $obj;
     }
 
     public function update(Request $request, $id)
     {
         $data = $this->validate($request, $this->rulePut());
-        
-        /** @var Video $obj */
-        $obj = $this->findOrFail($id);
-        $obj->update($data);
 
-        $obj->categories()->sync(array_unique($data['categories_id']));
-        $obj->genres()->sync(array_unique($data['genres_id']));
+        $obj = DB::transaction(function () use ($id, $data) {
+            /** @var Video $obj */
+            $obj = $this->findOrFail($id);
+            $obj->update($data);
+
+            $obj->categories()->sync(array_unique($data['categories_id']));
+            $obj->genres()->sync(array_unique($data['genres_id']));
+            return $obj;
+        });
 
         return $obj;
     }
