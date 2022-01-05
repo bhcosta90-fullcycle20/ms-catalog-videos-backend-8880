@@ -2,11 +2,17 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Http\Controllers\VideoController;
 use App\Models\Category;
 use App\Models\Genre;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Video as Model;
+use App\Models\Video;
+use Exception;
+use Illuminate\Http\Request;
+use Mockery;
+use Tests\Exceptions\TestException;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
 
@@ -170,7 +176,7 @@ class VideoControllerTest extends TestCase
             ]
         ];
 
-        foreach($datas as $data){
+        foreach ($datas as $data) {
             $data['send_data']['categories_id'] = [$category->id];
             $data['send_data']['genres_id'] = [$genre->id];
 
@@ -179,6 +185,64 @@ class VideoControllerTest extends TestCase
 
             $response = $this->assertUpdate($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['created_at', 'updated_at']);
+        }
+    }
+
+    public function testRollbackStore()
+    {
+        /** @var $controller Mockery */
+        $controller = Mockery::mock(VideoController::class);
+        $controller->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $controller->shouldReceive('validate')
+            ->withAnyArgs()
+            ->andReturn($this->sendData);
+
+        $controller->shouldReceive('ruleStore')
+            ->withAnyArgs()
+            ->andReturn([]);
+
+        $controller->shouldReceive('handleRelations')
+            ->once()
+            ->andThrow(new TestException('errorHandleRelations'));
+
+        /** @var $request Mockery */
+        $request = Mockery::mock(Request::class);
+
+        try {
+            $controller->store($request);
+        } catch (TestException $e) {
+            $this->assertEquals('errorHandleRelations', $e->getMessage());
+            $this->assertCount(1, Video::all());
+        }
+    }
+
+    public function testRollbackUpdate()
+    {
+        /** @var $controller Mockery */
+        $controller = Mockery::mock(VideoController::class);
+        $controller->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $controller->shouldReceive('validate')
+            ->withAnyArgs()
+            ->andReturn($this->sendData);
+
+        $controller->shouldReceive('ruleStore')
+            ->withAnyArgs()
+            ->andReturn([]);
+
+        $controller->shouldReceive('handleRelations')
+            ->once()
+            ->andThrow(new TestException('errorHandleRelations'));
+
+        /** @var $request Mockery */
+        $request = Mockery::mock(Request::class);
+
+        try {
+            $controller->update($request, $this->model->id);
+        } catch (TestException $e) {
+            $this->assertEquals('errorHandleRelations', $e->getMessage());
+            $this->assertCount(1, Video::all());
         }
     }
 
