@@ -173,6 +173,7 @@ class VideoControllerTest extends TestCase
     {
         $category = Category::factory()->create();
         $genre = Genre::factory()->create();
+        $genre->categories()->sync($category);
 
         $datas = [
             [
@@ -195,9 +196,13 @@ class VideoControllerTest extends TestCase
 
             $response = $this->assertStore($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['created_at', 'updated_at']);
+            $this->assertHasCategory($response->json('id'), $data['send_data']['categories_id'][0]);
+            $this->assertHasGenre($response->json('id'), $data['send_data']['genres_id'][0]);
 
             $response = $this->assertUpdate($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['created_at', 'updated_at']);
+            $this->assertHasCategory($response->json('id'), $data['send_data']['categories_id'][0]);
+            $this->assertHasGenre($response->json('id'), $data['send_data']['genres_id'][0]);
         }
     }
 
@@ -282,5 +287,21 @@ class VideoControllerTest extends TestCase
     protected function model()
     {
         return new Model;
+    }
+
+    protected function assertHasCategory($idVideo, $idCategory)
+    {
+        $this->assertDatabaseHas('category_video', [
+            'category_id' => $idCategory,
+            'video_id' => $idVideo,
+        ]);
+    }
+
+    protected function assertHasGenre($idVideo, $idGenre)
+    {
+        $this->assertDatabaseHas('genre_video', [
+            'genre_id' => $idGenre,
+            'video_id' => $idVideo,
+        ]);
     }
 }

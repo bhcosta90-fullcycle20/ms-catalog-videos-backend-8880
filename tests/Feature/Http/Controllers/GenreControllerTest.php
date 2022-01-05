@@ -173,17 +173,19 @@ class GenreControllerTest extends TestCase
             'name' => 'teste',
         ];
 
-        $this->assertStore($data + ['categories_id' => [$category->id]], $data + [
+        $response = $this->assertStore($data + ['categories_id' => [$category->id]], $data + [
             'is_active' => true,
             'deleted_at' => null,
         ]);
+        $this->assertHasCategory($response->json('id'), $category->id);
 
-        $this->assertStore(($data = [
+        $response = $this->assertStore(($data = [
             'name' => 'teste',
             'is_active' => false,
         ]) + ['categories_id' => [$category->id]], $data + [
             'is_active' => false,
         ]);
+        $this->assertHasCategory($response->json('id'), $category->id);
     }
 
     public function testUpdated()
@@ -207,6 +209,7 @@ class GenreControllerTest extends TestCase
         $response->assertJsonStructure([
             'created_at', 'updated_at',
         ]);
+        $this->assertHasCategory($response->json('id'), $category->id);
     }
 
     public function testDestroy()
@@ -232,5 +235,13 @@ class GenreControllerTest extends TestCase
     protected function model()
     {
         return new Model;
+    }
+
+    protected function assertHasCategory($idGenre, $idCategory)
+    {
+        $this->assertDatabaseHas('category_genre', [
+            'category_id' => $idCategory,
+            'genre_id' => $idGenre,
+        ]);
     }
 }
