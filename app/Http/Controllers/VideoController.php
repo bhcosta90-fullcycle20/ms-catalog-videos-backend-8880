@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Video;
+use App\Rules\GenresHasCategoriesRule;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -10,14 +11,11 @@ use Illuminate\Support\Facades\DB;
 
 class VideoController extends Abstracts\BasicCrudController
 {
-    protected function model(): Model
-    {
-        return new Video;
-    }
+    private array $rules = [];
 
-    protected function ruleStore()
+    public function __construct()
     {
-        return [
+        $this->rules = [
             'title' => 'required|min:3|max:100',
             'description' => 'required',
             'year_launched' => 'required|date_format:Y',
@@ -25,8 +23,18 @@ class VideoController extends Abstracts\BasicCrudController
             'rating' => "required|in:" . implode(',', Video::RATINGS),
             'duration' => 'required|integer',
             'categories_id' => "required|array|exists:categories,id,deleted_at,NULL",
-            'genres_id' => "required|array|exists:genres,id,deleted_at,NULL",
+            'genres_id' => ["required", "array", "exists:genres,id,deleted_at,NULL"],
         ];
+    }
+
+    protected function model(): Model
+    {
+        return new Video;
+    }
+
+    protected function ruleStore()
+    {
+        return $this->rules;
     }
 
     protected function rulePut()
@@ -36,6 +44,8 @@ class VideoController extends Abstracts\BasicCrudController
 
     public function store(Request $request)
     {
+        $this->addRuleGenreHasCategory($request);
+
         $data = $this->validate($request, $this->ruleStore());
         $self = $this;
 
@@ -51,6 +61,8 @@ class VideoController extends Abstracts\BasicCrudController
 
     public function update(Request $request, $id)
     {
+        $this->addRuleGenreHasCategory($request);
+
         $data = $this->validate($request, $this->rulePut());
         $obj = $this->findOrFail($id);
 
@@ -70,5 +82,11 @@ class VideoController extends Abstracts\BasicCrudController
         $video->categories()->sync(array_unique($data['categories_id']));
         $video->genres()->sync(array_unique($data['genres_id']));
         return $video;
+    }
+
+    protected function addRuleGenreHasCategory(Request $request)
+    {
+        $categories = is_array($request->get('categories_id')) ? $request->get('categories_id') : [];
+        $this->rules['genres_id'][] = new GenresHasCategoriesRule($categories);
     }
 }

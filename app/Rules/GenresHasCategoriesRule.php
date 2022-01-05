@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class GenresHasCategoriesRule implements Rule
