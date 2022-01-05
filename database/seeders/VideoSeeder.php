@@ -18,13 +18,15 @@ class VideoSeeder extends Seeder
         $genres = Genre::all();
 
         Video::factory(100)->create()->each(function ($objVideo) use ($genres) {
-            $categories = [];
-            $genres = $genres->random(3);
-            foreach ($genres as $genre) {
-                $categories += $genre->categories()->pluck('categories.id')->toArray();
+            $subGenres = $genres->random(5)->load('categories');
+            $categoriesId = [];
+            foreach ($subGenres as $genre) {
+                array_push($categoriesId, ...$genre->categories->pluck('id')->toArray());
             }
-            $objVideo->categories()->attach($categories);
-            $objVideo->genres()->attach($genres);
+            $categoriesId = array_unique($categoriesId);
+            $genresId = $subGenres->pluck('id')->toArray();
+            $objVideo->categories()->attach($categoriesId);
+            $objVideo->genres()->attach($genresId);
         });
     }
 }
