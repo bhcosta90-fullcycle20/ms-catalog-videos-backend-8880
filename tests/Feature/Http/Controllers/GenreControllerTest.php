@@ -2,13 +2,17 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Http\Controllers\GenreController;
 use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 use App\Models\Genre as Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
+use Mockery;
+use Tests\Exceptions\TestException;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
 
@@ -96,6 +100,69 @@ class GenreControllerTest extends TestCase
 
         $this->assertInvalidationStore($data, 'exists');
         $this->assertInvalidationUpdate($data, 'exists');
+    }
+
+    public function testRollbackStore()
+    {
+        /** @var $controller Mockery */
+        $controller = Mockery::mock(GenreController::class);
+        $controller->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $controller->shouldReceive('validate')
+            ->withAnyArgs()
+            ->andReturn([
+                'name' => 'teste',
+            ]);
+
+
+        $controller->shouldReceive('ruleStore')
+            ->withAnyArgs()
+            ->andReturn([]);
+
+        $controller->shouldReceive('handleRelations')
+            ->once()
+            ->andThrow(new TestException('errorHandleRelations'));
+
+        /** @var $request Mockery */
+        $request = Mockery::mock(Request::class);
+
+        try {
+            $controller->store($request);
+        } catch (TestException $e) {
+            $this->assertEquals('errorHandleRelations', $e->getMessage());
+            $this->assertCount(1, Model::all());
+        }
+    }
+
+    public function testRollbackUpdate()
+    {
+        /** @var $controller Mockery */
+        $controller = Mockery::mock(GenreController::class);
+        $controller->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $controller->shouldReceive('validate')
+            ->withAnyArgs()
+            ->andReturn([
+                'name' => 'teste',
+            ]);
+
+        $controller->shouldReceive('ruleStore')
+            ->withAnyArgs()
+            ->andReturn([]);
+
+        $controller->shouldReceive('handleRelations')
+            ->once()
+            ->andThrow(new TestException('errorHandleRelations'));
+
+        /** @var $request Mockery */
+        $request = Mockery::mock(Request::class);
+
+        try {
+            $controller->update($request, $this->model->id);
+        } catch (TestException $e) {
+            $this->assertEquals('errorHandleRelations', $e->getMessage());
+            $this->assertCount(1, Model::all());
+        }
     }
 
     public function testCreated()
