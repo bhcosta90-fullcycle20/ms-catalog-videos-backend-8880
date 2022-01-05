@@ -206,79 +206,79 @@ class VideoControllerTest extends TestCase
         }
     }
 
-    public function testSyncCategories()
-    {
-        $categories = Category::factory(3)->create()->pluck('id')->toArray();
-        $genre = Genre::factory(1)->create()->each(fn ($genre) => $genre->categories()->attach($categories))->first();
+    // public function testSyncCategories()
+    // {
+    //     $categories = Category::factory(3)->create()->pluck('id')->toArray();
+    //     $genre = Genre::factory(1)->create()->each(fn ($genre) => $genre->categories()->attach($categories))->first();
 
-        $response = $this->postJson($this->routeStore(), $this->sendData + [
-            'categories_id' => [$categories[0]],
-            'genres_id' => [$genre->id]
-        ]);
+    //     $response = $this->postJson($this->routeStore(), $this->sendData + [
+    //         'categories_id' => [$categories[0]],
+    //         'genres_id' => [$genre->id]
+    //     ]);
 
-        $this->assertDatabaseHas('category_video', [
-            'category_id' => $categories[0],
-            'video_id' => $response->json('id') ?: $response->json('data.id'),
-        ]);
+    //     $this->assertDatabaseHas('category_video', [
+    //         'category_id' => $categories[0],
+    //         'video_id' => $response->json('id') ?: $response->json('data.id'),
+    //     ]);
 
-        $response = $this->putJson($this->routePut(), $this->sendData + [
-            'categories_id' => [$categories[1], $categories[2]],
-            'genres_id' => [$genre->id]
-        ]);
+    //     $response = $this->putJson($this->routePut(), $this->sendData + [
+    //         'categories_id' => [$categories[1], $categories[2]],
+    //         'genres_id' => [$genre->id]
+    //     ]);
 
-        $this->assertDatabaseMissing('category_video', [
-            'category_id' => $categories[0],
-            'video_id' => $response->json('id') ?: $response->json('data.id'),
-        ]);
+    //     $this->assertDatabaseMissing('category_video', [
+    //         'category_id' => $categories[0],
+    //         'video_id' => $response->json('id') ?: $response->json('data.id'),
+    //     ]);
 
-        $this->assertDatabaseHas('category_video', [
-            'category_id' => $categories[1],
-            'video_id' => $response->json('id') ?: $response->json('data.id'),
-        ]);
+    //     $this->assertDatabaseHas('category_video', [
+    //         'category_id' => $categories[1],
+    //         'video_id' => $response->json('id') ?: $response->json('data.id'),
+    //     ]);
 
-        $this->assertDatabaseHas('category_video', [
-            'category_id' => $categories[2],
-            'video_id' => $response->json('id') ?: $response->json('data.id'),
-        ]);
-    }
+    //     $this->assertDatabaseHas('category_video', [
+    //         'category_id' => $categories[2],
+    //         'video_id' => $response->json('id') ?: $response->json('data.id'),
+    //     ]);
+    // }
 
-    public function testSyncGenres()
-    {
-        $category = Category::factory()->create();
-        $genres = Genre::factory(3)->create()->each(fn($genre) => $genre->categories()->attach($category));
+    // public function testSyncGenres()
+    // {
+    //     $category = Category::factory()->create();
+    //     $genres = Genre::factory(3)->create()->each(fn($genre) => $genre->categories()->attach($category));
         
-        $genresId = $genres->pluck('id')->toArray();
+    //     $genresId = $genres->pluck('id')->toArray();
 
-        $response = $this->postJson($this->routeStore(), $this->sendData + [
-            'categories_id' => [$category->id],
-            'genres_id' => [$genresId[0]]
-        ]);
+    //     $response = $this->postJson($this->routeStore(), $this->sendData + [
+    //         'categories_id' => [$category->id],
+    //         'genres_id' => [$genresId[0]]
+    //     ]);
 
-        $this->assertDatabaseHas('genre_video', [
-            'genre_id' => $genresId[0],
-            'video_id' => $idVideo = $response->json('id') ?: $response->json('data.id'),
-        ]);
+    //     $this->assertDatabaseHas('genre_video', [
+    //         'genre_id' => $genresId[0],
+    //         'video_id' => $idVideo = $response->json('id') ?: $response->json('data.id'),
+    //     ]);
 
-        $response = $this->putJson('videos/' . $idVideo, $this->sendData + [
-            'categories_id' => [$category->id],
-            'genres_id' => [$genresId[1], $genresId[2]]
-        ]);
+    //     $response = $this->putJson('videos/' . $idVideo, $this->sendData + [
+    //         'categories_id' => [$category->id],
+    //         'genres_id' => [$genresId[1], $genresId[2]]
+    //     ]);
 
-        $this->assertDatabaseMissing('genre_video', [
-            'genre_id' => $genresId[0],
-            'video_id' => $idVideo,
-        ]);
+    //     $this->assertDatabaseMissing('genre_video', [
+    //         'genre_id' => $genresId[0],
+    //         'video_id' => $idVideo,
+    //     ]);
 
-        $this->assertDatabaseHas('genre_video', [
-            'genre_id' => $genresId[1],
-            'video_id' => $idVideo,
-        ]);
+    //     $this->assertDatabaseHas('genre_video', [
+    //         'genre_id' => $genresId[1],
+    //         'video_id' => $idVideo,
+    //     ]);
 
-        $this->assertDatabaseHas('genre_video', [
-            'genre_id' => $genresId[2],
-            'video_id' => $idVideo,
-        ]);
-    }
+    //     $this->assertDatabaseHas('genre_video', [
+    //         'genre_id' => $genresId[2],
+    //         'video_id' => $idVideo,
+    //     ]);
+    // }
 
     public function testDestroy()
     {
