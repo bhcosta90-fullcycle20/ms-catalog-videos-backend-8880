@@ -16,10 +16,6 @@ class VideoControllerTest extends TestCase
 
     private Model $model;
 
-    private Category $category;
-
-    private Genre $genre;
-
     private $sendData = [];
 
     protected function setUp(): void
@@ -28,9 +24,6 @@ class VideoControllerTest extends TestCase
         $this->model = Model::factory()->create([
             'opened' => false
         ]);
-
-        $this->category = Category::factory()->create();
-        $this->genre = Genre::factory()->create();
 
         $this->sendData = [
             'title' => 'title',
@@ -159,6 +152,9 @@ class VideoControllerTest extends TestCase
 
     public function testCreatedAndUpdate()
     {
+        $category = Category::factory()->create();
+        $genre = Genre::factory()->create();
+
         $datas = [
             [
                 'send_data' => $this->sendData,
@@ -175,8 +171,8 @@ class VideoControllerTest extends TestCase
         ];
 
         foreach($datas as $data){
-            $data['send_data']['categories_id'] = [$this->category->id];
-            $data['send_data']['genres_id'] = [$this->genre->id];
+            $data['send_data']['categories_id'] = [$category->id];
+            $data['send_data']['genres_id'] = [$genre->id];
 
             $response = $this->assertStore($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['created_at', 'updated_at']);

@@ -37,11 +37,11 @@ class VideoController extends Abstracts\BasicCrudController
     public function store(Request $request)
     {
         $data = $this->validate($request, $this->ruleStore());
+        $self = $this;
 
-        $obj = DB::transaction(function () use ($data) {
+        $obj = DB::transaction(function () use ($data, $self) {
             $obj = $this->model()::create($data);
-            $obj->categories()->attach(array_unique($data['categories_id']));
-            $obj->genres()->attach(array_unique($data['genres_id']));
+            $self->handleRelations($obj, $data);
             return $obj;
         });
 
@@ -52,17 +52,23 @@ class VideoController extends Abstracts\BasicCrudController
     public function update(Request $request, $id)
     {
         $data = $this->validate($request, $this->rulePut());
+        $obj = $this->findOrFail($id);
 
-        $obj = DB::transaction(function () use ($id, $data) {
+        $self = $this;
+        $obj = DB::transaction(function () use ($obj, $data, $self) {
             /** @var Video $obj */
-            $obj = $this->findOrFail($id);
             $obj->update($data);
-
-            $obj->categories()->sync(array_unique($data['categories_id']));
-            $obj->genres()->sync(array_unique($data['genres_id']));
+            $self->handleRelations($obj, $data);
             return $obj;
         });
 
         return $obj;
+    }
+
+    protected function handleRelations(Video $video, $data): Video
+    {
+        $video->categories()->sync(array_unique($data['categories_id']));
+        $video->genres()->sync(array_unique($data['genres_id']));
+        return $video;
     }
 }
