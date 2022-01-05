@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
@@ -74,31 +75,39 @@ class GenreControllerTest extends TestCase
 
     public function testCreated()
     {
-        $this->assertStore($data = [
-            'name' => 'teste'
-        ], $data + [
+        $category = Category::factory()->create();
+
+        $data = [
+            'name' => 'teste',
+        ];
+
+        $this->assertStore($data + ['categories_id' => [$category->id]], $data + [
             'is_active' => true,
             'deleted_at' => null,
         ]);
 
-        $this->assertStore($data = [
+        $this->assertStore(($data = [
             'name' => 'teste',
             'is_active' => false,
-        ], $data + [
+        ]) + ['categories_id' => [$category->id]], $data + [
             'is_active' => false,
         ]);
     }
 
     public function testUpdated()
     {
+        $category = Category::factory()->create();
+
         $this->model = Model::factory()->create([
             'is_active' => false,
         ]);
 
-        $response = $this->assertUpdate($data = [
+        $data = [
             'name' => 'teste',
             'is_active' => true,
-        ], $data + [
+        ];
+
+        $response = $this->assertUpdate($data + ['categories_id' => [$category->id]], $data + [
             'is_active' => true,
             'deleted_at' => null,
         ]);
@@ -131,5 +140,5 @@ class GenreControllerTest extends TestCase
     protected function model()
     {
         return new Model;
-    }    
+    }
 }
