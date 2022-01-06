@@ -11,14 +11,17 @@ use App\Models\Video as Model;
 use App\Models\Video;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Mockery;
 use Tests\Exceptions\TestException;
 use Tests\Traits\TestSave;
+use Tests\Traits\TestUploads;
 use Tests\Traits\TestValidation;
 
 class VideoControllerTest extends TestCase
 {
-    use RefreshDatabase, TestValidation, TestSave;
+    use RefreshDatabase, TestValidation, TestSave, TestUploads;
 
     private Model $model;
 
@@ -169,6 +172,11 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationUpdate($data, "exists");
     }
 
+    public function testInvalidationVideoField()
+    {
+        $this->assertInvalidationFile('video_file', 'mp4', 12, 'mimetypes', ['values' => 'video/mp4']);
+    }
+
     public function testCreatedAndUpdate()
     {
         $category = Category::factory()->create();
@@ -204,6 +212,61 @@ class VideoControllerTest extends TestCase
             $this->assertHasCategory($response->json('id'), $data['send_data']['categories_id'][0]);
             $this->assertHasGenre($response->json('id'), $data['send_data']['genres_id'][0]);
         }
+    }
+
+    public function testStoreWithFiles()
+    {
+        Storage::fake();
+        $files = $this->getFiles();
+
+        $category = Category::factory()->create();
+        $genre = Genre::factory()->create();
+        $genre->categories()->attach($category);
+
+        $dataSend = $this->sendData + [
+            'categories_id' => [$category->id],
+            'genres_id' => [$genre->id],
+        ] + $files;
+
+        $response = $this->postJson($this->routeStore(), $dataSend)
+            ->assertStatus(201);
+
+        $id = $response->json('id') ?: $response->json('data.id');
+
+        foreach ($files as $file) {
+            Storage::exists("{$id}/{$file->hashName()}");
+        }
+    }
+
+    public function testUpdateWithFiles()
+    {
+        Storage::fake();
+        $files = $this->getFiles();
+
+        $category = Category::factory()->create();
+        $genre = Genre::factory()->create();
+        $genre->categories()->attach($category);
+
+        $dataSend = $this->sendData + [
+            'categories_id' => [$category->id],
+            'genres_id' => [$genre->id],
+        ] + $files;
+
+        $response = $this->putJson($this->routePut(), $dataSend)
+            ->assertStatus(200);
+
+        $id = $response->json('id') ?: $response->json('data.id');
+
+        // foreach ($files as $file) {
+        //     Storage::exists("{$id}/{$file->hashName()}");
+        // }
+    }
+
+    private function getFiles()
+    {
+        return [
+            'video_file' => UploadedFile::fake()->create('video.mp4'),
+        ];
     }
 
     public function testDestroy()
