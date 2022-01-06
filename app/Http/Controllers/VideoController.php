@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\VideoResource;
 use App\Models\Video;
 use App\Rules\GenresHasCategoriesRule;
 use Exception;
@@ -57,5 +58,10 @@ class VideoController extends Abstracts\BasicCrudController
     {
         $categories = is_array($request->get('categories_id')) ? $request->get('categories_id') : [];
         $this->rules['genres_id'][] = new GenresHasCategoriesRule($categories);
+    }
+
+    protected function resource(): string
+    {
+        return VideoResource::class;
     }
 }

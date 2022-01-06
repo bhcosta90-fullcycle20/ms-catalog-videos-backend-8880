@@ -2,15 +2,17 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Http\Resources\CastMemberResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\CastMember as Model;
+use Tests\Traits\TestResource;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
 
 class CastMemberControllerTest extends TestCase
 {
-    use RefreshDatabase, TestValidation, TestSave;
+    use RefreshDatabase, TestValidation, TestSave, TestResource;
 
     private Model $model;
 
@@ -31,11 +33,10 @@ class CastMemberControllerTest extends TestCase
 
     public function testShow()
     {
-        $category = $this->model;
-        $response = $this->getJson('/cast_members/' . $category->id);
+        $response = $this->getJson('/cast_members/' . $this->model->id);
 
-        $response->assertStatus(200)
-            ->assertJson($category->toArray());
+        $response->assertStatus(200);
+        $this->assertResource($response, new CastMemberResource($this->model));
     }
 
     public function testCreatedInvalidationData()

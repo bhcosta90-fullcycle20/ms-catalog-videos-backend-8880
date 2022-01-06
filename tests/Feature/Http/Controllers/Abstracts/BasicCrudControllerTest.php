@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers\Abstracts;
 use App\Http\Controllers\Abstracts\BasicCrudController;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Mockery;
 use ReflectionClass;
 use Tests\Stubs\Controllers\CategoryControllerStub;
@@ -69,8 +70,10 @@ class BasicCrudControllerTest extends TestCase
     public function testShow()
     {
         $category = CategoryStub::create(['name' => 'teste', 'description' => 'teste']);
+        /** @var JsonResource $result */
         $result = $this->controller->show($category->id);
-        $this->assertEquals($result->toArray(), $category->toArray());
+        // $this->assertEquals($result->toArray(), $category->toArray());
+        $this->assertEquals($result->response()->getData(true), ['data' => $category->toArray()]);
     }
 
     public function testUpdate()

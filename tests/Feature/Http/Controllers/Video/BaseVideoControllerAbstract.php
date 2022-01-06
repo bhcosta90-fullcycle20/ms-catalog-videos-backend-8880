@@ -17,6 +17,22 @@ abstract class BaseVideoControllerAbstract extends BaseVideo
             'opened' => false
         ]);
     }
+    
+    protected array $serializeFields = [
+        'title',
+        'description',
+        'year_launched',
+        'opened',
+        'rating',
+        'duration',
+        'video_file',
+        'thumb_file',
+        'banner_file',
+        'trailler_file',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
 
     protected function routeStore()
     {

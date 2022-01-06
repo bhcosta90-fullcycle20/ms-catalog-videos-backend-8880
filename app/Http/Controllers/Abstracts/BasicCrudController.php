@@ -5,10 +5,20 @@ namespace App\Http\Controllers\Abstracts;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use ReflectionClass;
 
 abstract class BasicCrudController extends Controller
 {
+    protected $paginateSize = true;
     protected abstract function model(): Model;
+
+    protected abstract function resource(): string;
+
+    protected function resourceCollection(): string|null
+    {
+        return null;
+    }
 
     protected abstract function ruleStore();
 
@@ -16,29 +26,48 @@ abstract class BasicCrudController extends Controller
 
     public function index()
     {
-        return $this->model()::all();
+        $data = !$this->paginateSize ? $this->model()::all() : $this->model()::paginate($this->paginateSize);
+
+        $resourceCollection = $this->resourceCollection();
+
+        if (is_null($resourceCollection)) {
+            $resource = $this->resource();
+            return $resource::collection($data);
+        }
+
+        $refClass = new ReflectionClass($resourceCollection);
+        $isCollectionClass = $refClass->isSubclassOf(ResourceCollection::class);
+
+        return $isCollectionClass ? new $resourceCollection($data) : $resourceCollection::collection($data);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $data = $this->validate($request, $this->ruleStore());
         $obj = $this->model()::create($data);
         $obj->refresh();
-        return $obj;
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
     public function show($id)
     {
-        return $this->findOrFail($id);
+        $obj = $this->findOrFail($id);
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $data = $this->validate($request, $this->rulePut());
         $obj = $this->findOrFail($id);
         $obj->update($data);
-        return $obj;
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $this->findOrFail($id)->delete();
         return response()->noContent();
     }

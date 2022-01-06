@@ -29,4 +29,9 @@ class CategoryController extends Abstracts\BasicCrudController
     {
         return $this->rules;
     }
+
+    protected function resource(): string
+    {
+        return CategoryResource::class;
+    }
 }

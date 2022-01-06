@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Http\Controllers\GenreController;
+use App\Http\Resources\GenreResource;
 use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -10,12 +11,13 @@ use App\Models\Genre as Model;
 use Illuminate\Http\Request;
 use Mockery;
 use Tests\Exceptions\TestException;
+use Tests\Traits\TestResource;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
 
 class GenreControllerTest extends TestCase
 {
-    use RefreshDatabase, TestValidation, TestSave;
+    use RefreshDatabase, TestValidation, TestSave, TestResource;
 
     private Model $model;
 
@@ -27,20 +29,18 @@ class GenreControllerTest extends TestCase
 
     public function testIndex()
     {
-        $category = $this->model;
         $response = $this->getJson('/genres');
 
         $response->assertStatus(200)
-            ->assertJson([$category->toArray()]);
+            ->assertJson([$this->model->toArray()]);
     }
 
     public function testShow()
     {
-        $category = $this->model;
-        $response = $this->getJson('/genres/' . $category->id);
+        $response = $this->getJson('/genres/' . $this->model->id);
 
-        $response->assertStatus(200)
-            ->assertJson($category->toArray());
+        $response->assertStatus(200);
+        $this->assertResource($response, new GenreResource($this->model));
     }
 
     public function testCreatedInvalidationData()

@@ -2,15 +2,17 @@
 
 namespace Tests\Feature\Http\Controllers\Video;
 
+use App\Http\Resources\VideoResource;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video as Model;
+use Tests\Traits\TestResource;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestUploads;
 
 class VideoControllerCrudTest extends BaseVideoControllerAbstract
 {
-    use TestSave, TestUploads;
+    use TestSave, TestUploads, TestResource;
 
     public function testIndex()
     {
@@ -23,11 +25,10 @@ class VideoControllerCrudTest extends BaseVideoControllerAbstract
 
     public function testShow()
     {
-        $category = $this->model;
-        $response = $this->getJson('/videos/' . $category->id);
+        $response = $this->getJson('/videos/' . $this->model->id);
 
-        $response->assertStatus(200)
-            ->assertJson($category->toArray());
+        $response->assertStatus(200);
+        $this->assertResource($response, new VideoResource($this->model));
     }
 
     public function testCreatedAndUpdate()
@@ -56,14 +57,14 @@ class VideoControllerCrudTest extends BaseVideoControllerAbstract
             $data['send_data']['genres_id'] = [$genre->id];
 
             $response = $this->assertStore($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
-            $response->assertJsonStructure(['created_at', 'updated_at']);
-            $this->assertHasCategory($response->json('id'), $data['send_data']['categories_id'][0]);
-            $this->assertHasGenre($response->json('id'), $data['send_data']['genres_id'][0]);
+            $response->assertJsonStructure(['data' => $this->serializeFields]);
+            $this->assertHasCategory($id = $this->getIdFromResponse($response), $data['send_data']['categories_id'][0]);
+            $this->assertHasGenre($id, $data['send_data']['genres_id'][0]);
 
             $response = $this->assertUpdate($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
-            $response->assertJsonStructure(['created_at', 'updated_at']);
-            $this->assertHasCategory($response->json('id'), $data['send_data']['categories_id'][0]);
-            $this->assertHasGenre($response->json('id'), $data['send_data']['genres_id'][0]);
+            $response->assertJsonStructure(['data' => $this->serializeFields]);
+            $this->assertHasCategory($id = $this->getIdFromResponse($response), $data['send_data']['categories_id'][0]);
+            $this->assertHasGenre($id, $data['send_data']['genres_id'][0]);
         }
     }
 

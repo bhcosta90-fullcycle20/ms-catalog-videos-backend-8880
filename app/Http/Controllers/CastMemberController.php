@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CastMemberResource;
 use App\Models\CastMember;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,5 +25,10 @@ class CastMemberController extends Abstracts\BasicCrudController
     protected function rulePut()
     {
         return $this->ruleStore();
+    }
+
+    protected function resource(): string
+    {
+        return CastMemberResource::class;
     }
 }
