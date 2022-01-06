@@ -23,7 +23,7 @@ class VideoFactory extends Factory
             'rating' => $this->faker->randomElement(Video::RATINGS),
             // 'thumb_file' => null,
             // 'banner_file' => null,
-            // 'trailler_file' => null,
+            // 'trailer_file' => null,
             // 'video_file' => null,
             // 'published' => rand(0, 1),
         ];

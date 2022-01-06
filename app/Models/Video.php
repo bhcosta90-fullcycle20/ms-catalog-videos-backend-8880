@@ -15,7 +15,7 @@ class Video extends Model
 
     const THUMB_FILE_MAX_SIZE = 1024 * 5; //5mb
     const BANNER_FILE_MAX_SIZE = 1024 * 10; //10mb
-    const TRAILLER_FILE_MAX_SIZE = 1024 * 1024 * 1; //1gb
+    const TRAILER_FILE_MAX_SIZE = 1024 * 1024 * 1; //1gb
     const VIDEO_FILE_MAX_SIZE = 1024 * 1024 * 50; //50gb
 
     const RATINGS = [
@@ -37,7 +37,7 @@ class Video extends Model
         'video_file',
         'thumb_file',
         'banner_file',
-        'trailler_file',
+        'trailer_file',
     ];
 
     protected $casts = [
@@ -125,7 +125,7 @@ class Video extends Model
             'video_file',
             'thumb_file',
             'banner_file',
-            'trailler_file',
+            'trailer_file',
         ];
     }
 

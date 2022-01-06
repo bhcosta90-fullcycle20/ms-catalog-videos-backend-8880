@@ -27,7 +27,7 @@ class VideoSeeder extends Seeder
             $objVideo = Video::create($makeVideo->toArray() + [
                 'thumb_file' => $this->getImageFile(),
                 'banner_file' => $this->getImageFile(),
-                'trailler_file' => $this->getVideoFile(),
+                'trailer_file' => $this->getVideoFile(),
                 'video_file' => $this->getVideoFile(),
             ]);
             $subGenres = $genres->random(5)->load('categories');

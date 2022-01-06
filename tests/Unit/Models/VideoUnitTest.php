@@ -21,7 +21,7 @@ class VideoUnitTest extends TestCase
             'video_file',
             'thumb_file',
             'banner_file',
-            'trailler_file',
+            'trailer_file',
         ], $obj->getFillable());
     }
 
