@@ -45,6 +45,7 @@ class VideoUnitTest extends TestCase
             \Illuminate\Database\Eloquent\Factories\HasFactory::class,
             \Illuminate\Database\Eloquent\SoftDeletes::class,
             \App\Models\Traits\Uuid::class,
+            \App\Models\Traits\UploadFile::class,
         ];
 
         $modelTraits = array_keys(class_uses(Model::class));

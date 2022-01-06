@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\UploadFile;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class Video extends Model
 {
-    use HasFactory, SoftDeletes, Traits\Uuid;
+    use HasFactory, SoftDeletes, Traits\Uuid, UploadFile;
 
     const RATINGS = [
         'L',
@@ -90,5 +91,15 @@ class Video extends Model
             $this->genres()->$method(array_unique($data['genres_id']));
         }
         return $this;
+    }
+
+    protected function fileDir(): string
+    {
+        return $this->id;
+    }
+
+    protected static function fileFields(): array
+    {
+        return [];
     }
 }
