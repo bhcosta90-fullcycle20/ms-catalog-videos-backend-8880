@@ -21,6 +21,14 @@ class GenreControllerTest extends TestCase
 
     private Model $model;
 
+    private array $serializeFields = [
+        'id',
+        'name',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -32,7 +40,17 @@ class GenreControllerTest extends TestCase
         $response = $this->getJson('/genres');
 
         $response->assertStatus(200)
-            ->assertJson([$this->model->toArray()]);
+            ->assertJson([
+                'meta' => ['per_page' => 15]
+            ])
+            ->assertJsonStructure([
+                'data' => ['*' => $this->serializeFields],
+                'links' => [],
+                'meta' => [],
+            ]);
+
+        $resource = GenreResource::collection([$this->model]);
+        $this->assertResource($response, $resource);
     }
 
     public function testShow()

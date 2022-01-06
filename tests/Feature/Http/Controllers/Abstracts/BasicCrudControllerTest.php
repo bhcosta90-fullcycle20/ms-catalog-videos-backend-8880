@@ -10,6 +10,7 @@ use Mockery;
 use ReflectionClass;
 use Tests\Stubs\Controllers\CategoryControllerStub;
 use Tests\Stubs\Models\CategoryStub;
+use Tests\Stubs\Resources\CategoryResourceStub;
 use Tests\TestCase;
 
 class BasicCrudControllerTest extends TestCase
@@ -34,7 +35,8 @@ class BasicCrudControllerTest extends TestCase
     {
         $category = CategoryStub::create(['name' => 'teste', 'description' => 'teste']);
         $result = $this->controller->index();
-        $this->assertEquals([$category->toArray()], $result->toArray());
+        $resource = CategoryResourceStub::collection([$category]);
+        $this->assertEquals($result->response()->getData(true)['data'], $resource->response()->getData(true)['data']);
     }
 
     public function testInvalidationStore()
@@ -64,7 +66,7 @@ class BasicCrudControllerTest extends TestCase
         $request = $mockery;
         $result = $this->controller->store($request);
 
-        $this->assertEquals($result->toArray(), CategoryStub::find(1)->toArray());
+        $this->assertEquals($result->response()->getData(true), ['data' => CategoryStub::find(1)->toArray()]);
     }
 
     public function testShow()
@@ -72,7 +74,6 @@ class BasicCrudControllerTest extends TestCase
         $category = CategoryStub::create(['name' => 'teste', 'description' => 'teste']);
         /** @var JsonResource $result */
         $result = $this->controller->show($category->id);
-        // $this->assertEquals($result->toArray(), $category->toArray());
         $this->assertEquals($result->response()->getData(true), ['data' => $category->toArray()]);
     }
 
@@ -89,7 +90,8 @@ class BasicCrudControllerTest extends TestCase
         /** @var Request $request */
         $request = $mockery;
         $result = $this->controller->update($request, $category->id);
-        $this->assertEquals($result->toArray(), CategoryStub::find($category->id)->toArray());
+        $categoryUpdate = ['name' => 'test_name'] + $category->toArray();
+        $this->assertEquals($result->response()->getData(true), ['data' => $categoryUpdate]);
     }
 
     public function testDestroy()

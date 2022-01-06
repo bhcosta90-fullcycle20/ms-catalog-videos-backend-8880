@@ -16,6 +16,14 @@ class CastMemberControllerTest extends TestCase
 
     private Model $model;
 
+    private array $serializeFields = [
+        'id',
+        'name',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -24,11 +32,20 @@ class CastMemberControllerTest extends TestCase
 
     public function testIndex()
     {
-        $category = $this->model;
         $response = $this->getJson('/cast_members');
 
         $response->assertStatus(200)
-            ->assertJson([$category->toArray()]);
+            ->assertJson([
+                'meta' => ['per_page' => 15]
+            ])
+            ->assertJsonStructure([
+                'data' => ['*' => $this->serializeFields],
+                'links' => [],
+                'meta' => [],
+            ]);
+
+        $resource = CastMemberResource::collection([$this->model]);
+        $this->assertResource($response, $resource);
     }
 
     public function testShow()
@@ -89,7 +106,7 @@ class CastMemberControllerTest extends TestCase
                 'deleted_at' => null,
             ]);
 
-            $response->assertJsonStructure(['created_at', 'updated_at']);
+            $response->assertJsonStructure(['data' => $this->serializeFields]);
         }
     }
 
@@ -107,9 +124,7 @@ class CastMemberControllerTest extends TestCase
             'deleted_at' => null,
         ]);
 
-        $response->assertJsonStructure([
-            'created_at', 'updated_at',
-        ]);
+        $response->assertJsonStructure(['data' => $this->serializeFields]);
     }
 
     public function testDestroy()

@@ -16,11 +16,20 @@ class VideoControllerCrudTest extends BaseVideoControllerAbstract
 
     public function testIndex()
     {
-        $category = $this->model;
         $response = $this->getJson('/videos');
 
         $response->assertStatus(200)
-            ->assertJson([$category->toArray()]);
+            ->assertJson([
+                'meta' => ['per_page' => 15]
+            ])
+            ->assertJsonStructure([
+                'data' => ['*' => $this->serializeFields],
+                'links' => [],
+                'meta' => [],
+            ]);
+
+        $resource = VideoResource::collection([$this->model]);
+        $this->assertResource($response, $resource);
     }
 
     public function testShow()
