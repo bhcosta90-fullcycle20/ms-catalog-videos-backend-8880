@@ -29,6 +29,7 @@ class Video extends Model
         'opened',
         'rating',
         'duration',
+        'video_file',
     ];
 
     protected $casts = [
@@ -48,15 +49,15 @@ class Video extends Model
         return $this->belongsToMany(Genre::class)->withTrashed();
     }
 
-
-
     public static function create(array $attributes = [])
     {
+        $files = self::extractFiles($attributes);
         try {
             DB::beginTransaction();
+            /** @var self $obj */
             $obj = static::query()->create($attributes);
             $obj->handleRelations($attributes, 'attach');
-            // Uploads
+            $obj->uploadFiles($files);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -100,6 +101,8 @@ class Video extends Model
 
     protected static function fileFields(): array
     {
-        return [];
+        return [
+            'video_file',
+        ];
     }
 }

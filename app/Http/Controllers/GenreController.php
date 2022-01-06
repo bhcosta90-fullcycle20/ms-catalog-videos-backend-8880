@@ -30,6 +30,11 @@ class GenreController extends Abstracts\BasicCrudController
         return $this->rules;
     }
 
+    public function index()
+    {
+        return $this->model()->with(['categories'])->get();
+    }
+
     public function store(Request $request)
     {
         $data = $this->validate($request, $this->ruleStore());

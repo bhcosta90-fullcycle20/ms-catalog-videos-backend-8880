@@ -24,6 +24,7 @@ class VideoController extends Abstracts\BasicCrudController
             'duration' => 'required|integer',
             'categories_id' => "required|array|exists:categories,id,deleted_at,NULL",
             'genres_id' => ["required", "array", "exists:genres,id,deleted_at,NULL"],
+            'video_file' => 'nullable',
         ];
     }
 
