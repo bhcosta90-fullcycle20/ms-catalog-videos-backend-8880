@@ -15,6 +15,8 @@ class VideoResource extends JsonResource
     public function toArray($request)
     {
         return parent::toArray($request) + [
+            'genres' => GenreResource::collection($this->genres),
+            'categories' => CategoryResource::collection($this->categories),
             'url' => [
                 'video' => $this->video_file_url,
                 'banner' => $this->banner_file_url,

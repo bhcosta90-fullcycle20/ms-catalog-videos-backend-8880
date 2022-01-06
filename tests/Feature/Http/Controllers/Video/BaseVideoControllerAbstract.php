@@ -12,12 +12,12 @@ abstract class BaseVideoControllerAbstract extends BaseVideo
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->model = Model::factory()->create([
             'opened' => false
         ]);
     }
-    
+
     protected array $serializeFields = [
         'title',
         'description',
@@ -32,6 +32,35 @@ abstract class BaseVideoControllerAbstract extends BaseVideo
         'created_at',
         'updated_at',
         'deleted_at',
+        'categories' => [
+            '*' => [
+                'id',
+                'name',
+                'description',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+            ]
+        ],
+        'genres' => [
+            '*' => [
+                'id',
+                'name',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+                'categories' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'description',
+                        'created_at',
+                        'updated_at',
+                        'deleted_at',
+                    ]
+                ]
+            ]
+        ],
         'url' => [
             'video',
             'banner',
