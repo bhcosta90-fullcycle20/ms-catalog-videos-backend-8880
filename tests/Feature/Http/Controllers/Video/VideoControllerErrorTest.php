@@ -4,6 +4,7 @@ namespace Tests\Feature\Http\Controllers\Video;
 
 use App\Models\Category;
 use App\Models\Genre;
+use App\Models\Video;
 use Tests\Traits\TestUploads;
 
 class VideoControllerErrorTest extends BaseVideoControllerAbstract
@@ -123,6 +124,9 @@ class VideoControllerErrorTest extends BaseVideoControllerAbstract
 
     public function testInvalidationVideoField()
     {
-        $this->assertInvalidationFile('video_file', 'mp4', 12, 'mimetypes', ['values' => 'video/mp4']);
+        $this->assertInvalidationFile('video_file', 'mp4', Video::VIDEO_FILE_MAX_SIZE, 'mimetypes', ['values' => 'video/mp4']);
+        $this->assertInvalidationFile('trailler_file', 'mp4', Video::TRAILLER_FILE_MAX_SIZE, 'mimetypes', ['values' => 'video/mp4']);
+        $this->assertInvalidationFile('banner_file', 'jpg', Video::BANNER_FILE_MAX_SIZE, 'mimes', ['values' => 'jpg, jpeg, png']);
+        $this->assertInvalidationFile('thumb_file', 'jpg', Video::THUMB_FILE_MAX_SIZE, 'mimes', ['values' => 'jpg, jpeg, png']);
     }
 }

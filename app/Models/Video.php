@@ -13,6 +13,11 @@ class Video extends Model
 {
     use HasFactory, SoftDeletes, Traits\Uuid, UploadFile;
 
+    const THUMB_FILE_MAX_SIZE = 1024 * 5; //5mb
+    const BANNER_FILE_MAX_SIZE = 1024 * 10; //10mb
+    const TRAILLER_FILE_MAX_SIZE = 1024 * 1024 * 1; //1gb
+    const VIDEO_FILE_MAX_SIZE = 1024 * 1024 * 50; //50gb
+
     const RATINGS = [
         'L',
         '10',
@@ -31,6 +36,8 @@ class Video extends Model
         'duration',
         'video_file',
         'thumb_file',
+        'banner_file',
+        'trailler_file',
     ];
 
     protected $casts = [
@@ -79,10 +86,16 @@ class Video extends Model
             DB::beginTransaction();
             $saved = parent::update($attributes, $options);
             $this->handleRelations($attributes);
-            $this->uploadFiles($files);
+            if ($saved) {
+                $this->uploadFiles($files);
+            }
             DB::commit();
+            if ($saved && count($files)) {
+                $this->deleteOldFiles();
+            }
         } catch (Exception $e) {
             DB::rollBack();
+            $this->deleteFiles($files);
             throw $e;
         }
 
@@ -111,6 +124,8 @@ class Video extends Model
         return [
             'video_file',
             'thumb_file',
+            'banner_file',
+            'trailler_file',
         ];
     }
 }
