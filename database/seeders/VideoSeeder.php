@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use App\Models\Genre;
 use App\Models\Video;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class VideoSeeder extends Seeder
 {
@@ -15,9 +18,18 @@ class VideoSeeder extends Seeder
      */
     public function run()
     {
+        $dir = Storage::getDriver()->getAdapter()->getPathPrefix();
+        File::deleteDirectory($dir, true);
+
         $genres = Genre::all();
 
-        Video::factory(100)->create()->each(function ($objVideo) use ($genres) {
+        Video::factory(100)->make()->each(function ($makeVideo) use ($genres) {
+            $objVideo = Video::create($makeVideo->toArray() + [
+                'thumb_file' => $this->getImageFile(),
+                'banner_file' => $this->getImageFile(),
+                'trailler_file' => $this->getVideoFile(),
+                'video_file' => $this->getVideoFile(),
+            ]);
             $subGenres = $genres->random(5)->load('categories');
             $categoriesId = [];
             foreach ($subGenres as $genre) {
@@ -28,5 +40,15 @@ class VideoSeeder extends Seeder
             $objVideo->categories()->attach($categoriesId);
             $objVideo->genres()->attach($genresId);
         });
+    }
+
+    private function getVideoFile()
+    {
+        return new UploadedFile(storage_path('faker/video.mp4'), 'video.mp4');
+    }
+
+    private function getImageFile()
+    {
+        return new UploadedFile(storage_path('faker/laravel.png'), 'laravel.png');
     }
 }
