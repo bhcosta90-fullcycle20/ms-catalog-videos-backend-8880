@@ -4,9 +4,6 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Models\Category as Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Lang;
-use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;

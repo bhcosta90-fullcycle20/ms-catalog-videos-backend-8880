@@ -3,11 +3,8 @@
 namespace Tests\Feature\Http\Controllers;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 use App\Models\CastMember as Model;
-use Illuminate\Support\Facades\Lang;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestValidation;
 
