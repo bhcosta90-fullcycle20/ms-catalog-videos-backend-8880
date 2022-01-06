@@ -27,7 +27,7 @@ class VideoUploadTest extends BaseVideo
     {
         $video = Model::create($this->sendData + $this->getFiles());
         foreach (array_keys($this->getFiles()) as $key) {
-            Storage::assertExists($video->id . '/' . $video->{$key});
+            Storage::assertExists($video->relativePath($video->{$key}));
         }
     }
 
@@ -51,7 +51,7 @@ class VideoUploadTest extends BaseVideo
         $files = [];
         foreach ($keysValues = array_keys($this->getFiles()) as $key) {
             $files[] = $video->id . '/' . $video->{$key};
-            Storage::assertExists($video->id . '/' . $video->{$key});
+            Storage::assertExists($video->relativePath($video->{$key}));
         }
 
         $newVideo = UploadedFile::fake()->create('video.mp4');
@@ -61,7 +61,7 @@ class VideoUploadTest extends BaseVideo
 
         Storage::assertMissing($files[0]);
         Storage::assertExists($files[1]);
-        Storage::assertExists($video->id . '/' . $newVideo->hashName());
+        Storage::assertExists($video->relativePath($newVideo->hashName()));
     }
 
     public function testRollbackUpdateWithFiles()

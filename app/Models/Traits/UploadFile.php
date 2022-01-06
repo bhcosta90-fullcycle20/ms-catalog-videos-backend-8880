@@ -17,11 +17,11 @@ trait UploadFile
 
     public static function bootUploadFile(): void
     {
-        static::updating(function(Model $model){
+        static::updating(function (Model $model) {
             $fieldsUpdated = array_keys($model->getDirty());
             $filesUpdated = array_intersect($fieldsUpdated, self::fileFields());
-            $filesFiltered = Arr::where($filesUpdated, fn($f) => $model->getOriginal($f));
-            $model->oldFiles = array_map(fn($f) => $model->getOriginal($f), $filesFiltered);
+            $filesFiltered = Arr::where($filesUpdated, fn ($f) => $model->getOriginal($f));
+            $model->oldFiles = array_map(fn ($f) => $model->getOriginal($f), $filesFiltered);
         });
     }
 
@@ -40,6 +40,11 @@ trait UploadFile
     public function uploadFile($file)
     {
         $file->store($this->fileDir());
+    }
+
+    public function relativePath(string $value)
+    {
+        return "{$this->fileDir()}/{$value}";
     }
 
     /**
