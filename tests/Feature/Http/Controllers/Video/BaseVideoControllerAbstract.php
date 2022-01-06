@@ -32,6 +32,12 @@ abstract class BaseVideoControllerAbstract extends BaseVideo
         'created_at',
         'updated_at',
         'deleted_at',
+        'url' => [
+            'video',
+            'banner',
+            'trailer',
+            'thumb',
+        ],
     ];
 
     protected function routeStore()

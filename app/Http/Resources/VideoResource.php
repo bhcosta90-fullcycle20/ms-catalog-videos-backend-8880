@@ -16,10 +16,10 @@ class VideoResource extends JsonResource
     {
         return parent::toArray($request) + [
             'url' => [
-                'video_file' => $this->video_file_url,
-                'banner_file' => $this->banner_file_url,
-                'trailer_file' => $this->trailer_file_url,
-                'thumb_file' => $this->thumb_file_url,
+                'video' => $this->video_file_url,
+                'banner' => $this->banner_file_url,
+                'trailer' => $this->trailer_file_url,
+                'thumb' => $this->thumb_file_url,
             ]
         ];
     }
