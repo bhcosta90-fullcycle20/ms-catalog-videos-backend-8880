@@ -10,7 +10,8 @@ use ReflectionClass;
 
 abstract class BasicCrudController extends Controller
 {
-    protected $paginateSize = true;
+    protected $paginateSize = 15;
+
     protected abstract function model(): Model;
 
     protected abstract function resource(): string;
