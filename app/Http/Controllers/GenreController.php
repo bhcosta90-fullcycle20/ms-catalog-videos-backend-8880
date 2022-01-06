@@ -43,7 +43,8 @@ class GenreController extends Abstracts\BasicCrudController
         });
 
         $obj->refresh();
-        return $obj;
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
     public function update(Request $request, $id)
@@ -59,7 +60,8 @@ class GenreController extends Abstracts\BasicCrudController
             return $obj;
         });
 
-        return $obj;
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
     protected function handleRelations(Genre $genre, $data): Genre

@@ -69,11 +69,13 @@ class VideoControllerCrudTest extends BaseVideoControllerAbstract
             $response->assertJsonStructure(['data' => $this->serializeFields]);
             $this->assertHasCategory($id = $this->getIdFromResponse($response), $data['send_data']['categories_id'][0]);
             $this->assertHasGenre($id, $data['send_data']['genres_id'][0]);
+            $this->assertResource($response, new VideoResource(Model::find($id)));
 
             $response = $this->assertUpdate($data['send_data'], $data['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure(['data' => $this->serializeFields]);
             $this->assertHasCategory($id = $this->getIdFromResponse($response), $data['send_data']['categories_id'][0]);
             $this->assertHasGenre($id, $data['send_data']['genres_id'][0]);
+            $this->assertResource($response, new VideoResource(Model::find($id)));
         }
     }
 

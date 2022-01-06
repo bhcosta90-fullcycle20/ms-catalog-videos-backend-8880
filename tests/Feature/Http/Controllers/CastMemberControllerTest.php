@@ -107,6 +107,7 @@ class CastMemberControllerTest extends TestCase
             ]);
 
             $response->assertJsonStructure(['data' => $this->serializeFields]);
+            $this->assertResource($response, new CastMemberResource(Model::find($this->getIdFromResponse($response))));
         }
     }
 
@@ -125,6 +126,7 @@ class CastMemberControllerTest extends TestCase
         ]);
 
         $response->assertJsonStructure(['data' => $this->serializeFields]);
+        $this->assertResource($response, new CastMemberResource(Model::find($this->getIdFromResponse($response))));
     }
 
     public function testDestroy()

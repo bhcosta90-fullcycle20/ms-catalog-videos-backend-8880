@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Http\Controllers\GenreController;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\GenreResource;
 use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -202,7 +203,8 @@ class GenreControllerTest extends TestCase
             'is_active' => true,
             'deleted_at' => null,
         ]);
-        $this->assertHasCategory($response->json('id'), $category->id);
+        $id = $this->getIdFromResponse($response);
+        $this->assertHasCategory($id, $category->id);
 
         $response = $this->assertStore(($data = [
             'name' => 'teste',
@@ -210,7 +212,9 @@ class GenreControllerTest extends TestCase
         ]) + ['categories_id' => [$category->id]], $data + [
             'is_active' => false,
         ]);
-        $this->assertHasCategory($response->json('id'), $category->id);
+        $id = $this->getIdFromResponse($response);
+        $this->assertHasCategory($id, $category->id);
+        $this->assertResource($response, new GenreResource(Model::find($this->getIdFromResponse($response))));
     }
 
     public function testUpdated()
@@ -231,10 +235,11 @@ class GenreControllerTest extends TestCase
             'deleted_at' => null,
         ]);
 
-        $response->assertJsonStructure([
-            'created_at', 'updated_at',
-        ]);
-        $this->assertHasCategory($response->json('id'), $category->id);
+        $response->assertJsonStructure(['data' => $this->serializeFields]);
+        $id = $this->getIdFromResponse($response);
+
+        $this->assertHasCategory($id, $category->id);
+        $this->assertResource($response, new GenreResource(Model::find($id)));
     }
 
     public function testDestroy()
