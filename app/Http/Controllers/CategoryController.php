@@ -15,11 +15,6 @@ class CategoryController extends Abstracts\BasicCrudController
         'is_active' => 'nullable|boolean',
     ];
 
-    public function index()
-    {
-        return $this->model()->with(['genres'])->get();
-    }
-
     protected function model(): Model
     {
         return new Category;
