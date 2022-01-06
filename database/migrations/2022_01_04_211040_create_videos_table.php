@@ -23,6 +23,7 @@ class CreateVideosTable extends Migration
             $table->enum('rating', Video::RATINGS);
             $table->unsignedSmallInteger('duration');
             $table->string('video_file')->nullable();
+            $table->string('thumb_file')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

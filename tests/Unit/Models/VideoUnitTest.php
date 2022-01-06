@@ -19,6 +19,7 @@ class VideoUnitTest extends TestCase
             'rating',
             'duration',
             'video_file',
+            'thumb_file',
         ], $obj->getFillable());
     }
 

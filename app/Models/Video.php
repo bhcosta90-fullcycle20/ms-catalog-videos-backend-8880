@@ -30,6 +30,7 @@ class Video extends Model
         'rating',
         'duration',
         'video_file',
+        'thumb_file',
     ];
 
     protected $casts = [
@@ -60,6 +61,9 @@ class Video extends Model
             $obj->uploadFiles($files);
             DB::commit();
         } catch (Exception $e) {
+            if (isset($obj)) {
+                $obj->deleteFiles($files);
+            }
             DB::rollBack();
             throw $e;
         }
@@ -106,6 +110,7 @@ class Video extends Model
     {
         return [
             'video_file',
+            'thumb_file',
         ];
     }
 }

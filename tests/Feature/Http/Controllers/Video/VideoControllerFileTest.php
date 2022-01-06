@@ -4,18 +4,23 @@ namespace Tests\Feature\Http\Controllers\Video;
 
 use App\Models\Category;
 use App\Models\Genre;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\Traits\TestSave;
 use Tests\Traits\TestUploads;
+use Tests\Traits\Models\VideoTrait;
 
 class VideoControllerFileTest extends BaseVideoControllerAbstract
 {
-    use TestSave, TestUploads;
+    use TestSave, TestUploads, VideoTrait;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Storage::fake();
+    }
 
     public function testStoreWithFiles()
     {
-        Storage::fake();
         $files = $this->getFiles();
 
         $category = Category::factory()->create();
@@ -39,7 +44,6 @@ class VideoControllerFileTest extends BaseVideoControllerAbstract
 
     public function testUpdateWithFiles()
     {
-        Storage::fake();
         $files = $this->getFiles();
 
         $category = Category::factory()->create();
@@ -59,12 +63,5 @@ class VideoControllerFileTest extends BaseVideoControllerAbstract
         foreach ($files as $file) {
             Storage::exists("{$id}/{$file->hashName()}");
         }
-    }
-
-    private function getFiles()
-    {
-        return [
-            'video_file' => UploadedFile::fake()->create('video.mp4'),
-        ];
     }
 }

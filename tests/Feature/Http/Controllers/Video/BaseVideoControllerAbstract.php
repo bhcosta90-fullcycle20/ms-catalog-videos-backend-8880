@@ -2,17 +2,12 @@
 
 namespace Tests\Feature\Http\Controllers\Video;
 
-use Tests\TestCase;
 use App\Models\Video as Model;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Models\Video\BaseVideo;
 
-abstract class BaseVideoControllerAbstract extends TestCase
+abstract class BaseVideoControllerAbstract extends BaseVideo
 {
-    use RefreshDatabase;
-    
     protected Model $model;
-
-    protected $sendData = [];
 
     protected function setUp(): void
     {
@@ -21,14 +16,6 @@ abstract class BaseVideoControllerAbstract extends TestCase
         $this->model = Model::factory()->create([
             'opened' => false
         ]);
-
-        $this->sendData = [
-            'title' => 'title',
-            'description' => 'description',
-            'year_launched' => 1990,
-            'rating' => Model::RATINGS[0],
-            'duration' => 60,
-        ];
     }
 
     protected function routeStore()

@@ -5,11 +5,8 @@ namespace Tests\Feature\Models;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video as Model;
-use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class VideoTest extends TestCase
@@ -61,6 +58,10 @@ class VideoTest extends TestCase
 
     public function testCreateWithBasicFields()
     {
+        foreach (Model::fileFields() as $value) {
+            $this->sendData[$value] = $value . '.test';
+        }
+
         $video = Model::create($this->sendData);
         $video->refresh();
         $this->assertFalse($video->opened);
@@ -88,6 +89,10 @@ class VideoTest extends TestCase
 
     public function testUpdatedWithBasicFields()
     {
+        foreach (Model::fileFields() as $value) {
+            $this->sendData[$value] = $value . '.test';
+        }
+        
         $video = Model::factory()->create(['opened' => false]);
         $video->update($this->sendData);
         $this->assertFalse($video->opened);
